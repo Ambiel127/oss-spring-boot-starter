@@ -5,10 +5,10 @@ package com.mth.oss.spring.boot.autoconfigure;
  * @date 2022/1/8
  */
 
-import com.mth.oss.spring.boot.autoconfigure.service.OssBucketService;
-import com.mth.oss.spring.boot.autoconfigure.service.OssDownloadService;
-import com.mth.oss.spring.boot.autoconfigure.service.OssObjectManageService;
-import com.mth.oss.spring.boot.autoconfigure.service.OssUploadService;
+import com.mth.oss.spring.boot.autoconfigure.aliyun.AliyunBucketService;
+import com.mth.oss.spring.boot.autoconfigure.aliyun.AliyunDownloadService;
+import com.mth.oss.spring.boot.autoconfigure.aliyun.AliyunObjectManageService;
+import com.mth.oss.spring.boot.autoconfigure.aliyun.AliyunUploadService;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
@@ -23,30 +23,30 @@ public class OssStarterAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    @ConditionalOnProperty(prefix = "oss.config", name = "enable", havingValue = "true")
-    public OssBucketService ossBucketService(OssProperties ossProperties) {
-        return new OssBucketService(ossProperties);
+    @ConditionalOnProperty(prefix = "oss.aliyun", name = "enable", havingValue = "true")
+    public AliyunBucketService ossBucketService(OssProperties ossProperties) {
+        return new AliyunBucketService(ossProperties.getAliyun());
     }
 
     @Bean
     @ConditionalOnMissingBean
-    @ConditionalOnProperty(prefix = "oss.config", name = "enable", havingValue = "true")
-    public OssUploadService ossUploadService(OssProperties ossProperties, OssBucketService ossBucketService) {
-        return new OssUploadService(ossProperties, ossBucketService);
+    @ConditionalOnProperty(prefix = "oss.aliyun", name = "enable", havingValue = "true")
+    public AliyunUploadService ossUploadService(OssProperties ossProperties, AliyunBucketService aliyunBucketService) {
+        return new AliyunUploadService(ossProperties.getAliyun(), aliyunBucketService);
     }
 
     @Bean
     @ConditionalOnMissingBean
-    @ConditionalOnProperty(prefix = "oss.config", name = "enable", havingValue = "true")
-    public OssDownloadService ossDownloadService(OssProperties ossProperties) {
-        return new OssDownloadService(ossProperties);
+    @ConditionalOnProperty(prefix = "oss.aliyun", name = "enable", havingValue = "true")
+    public AliyunDownloadService ossDownloadService(OssProperties ossProperties) {
+        return new AliyunDownloadService(ossProperties.getAliyun());
     }
 
     @Bean
     @ConditionalOnMissingBean
-    @ConditionalOnProperty(prefix = "oss.config", name = "enable", havingValue = "true")
-    public OssObjectManageService ossObjectManageService(OssProperties ossProperties) {
-        return new OssObjectManageService(ossProperties);
+    @ConditionalOnProperty(prefix = "oss.aliyun", name = "enable", havingValue = "true")
+    public AliyunObjectManageService ossObjectManageService(OssProperties ossProperties) {
+        return new AliyunObjectManageService(ossProperties.getAliyun());
     }
 
 }

@@ -1,24 +1,25 @@
-package com.mth.oss.spring.boot.autoconfigure.service;
+package com.mth.oss.spring.boot.autoconfigure.aliyun;
 
 import com.aliyun.oss.OSS;
 import com.aliyun.oss.OSSClientBuilder;
 import com.aliyun.oss.model.*;
 import com.mth.oss.spring.boot.autoconfigure.OssProperties;
+import com.mth.oss.spring.boot.autoconfigure.service.BucketService;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * oss 存储空间
+ * Aliyun 存储空间 bucket 操作
  *
  * @author <a href="mailto:ambiel127@163.com">Matianhao</a>
  * @since 1.0
  */
-public class OssBucketService {
+public class AliyunBucketService implements BucketService {
 
-    private final OssProperties ossProperties;
+    private final OssProperties.Aliyun ossProperties;
 
-    public OssBucketService(OssProperties ossProperties) {
+    public AliyunBucketService(OssProperties.Aliyun ossProperties) {
         this.ossProperties = ossProperties;
     }
 
@@ -28,6 +29,7 @@ public class OssBucketService {
      *
      * @return 桶列表
      */
+    @Override
     public List<Bucket> listBuckets() {
         if (!ossProperties.getEnable()) {
             return new ArrayList<>();
@@ -46,6 +48,7 @@ public class OssBucketService {
      *
      * @return 存在true；不存在false
      */
+    @Override
     public boolean bucketExist() {
         if (!ossProperties.getEnable()) {
             return false;
@@ -65,6 +68,7 @@ public class OssBucketService {
      * @param bucketName 桶名称
      * @return 存在true；不存在false
      */
+    @Override
     public boolean bucketExist(String bucketName) {
         if (!ossProperties.getEnable()) {
             return false;
@@ -84,6 +88,7 @@ public class OssBucketService {
      * @param bucketName 桶名称
      * @return 是否创建成功，创建成功true；创建失败false
      */
+    @Override
     public boolean createBucket(String bucketName) {
         if (!ossProperties.getEnable()) {
             return false;
@@ -132,6 +137,7 @@ public class OssBucketService {
      * @param bucketName 桶名称
      * @return 是否删除成功，删除成功true；删除失败false
      */
+    @Override
     public boolean deleteBucket(String bucketName) {
         if (!ossProperties.getEnable()) {
             return false;

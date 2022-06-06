@@ -1,4 +1,4 @@
-package com.mth.oss.spring.boot.autoconfigure.service;
+package com.mth.oss.spring.boot.autoconfigure.aliyun;
 
 import com.aliyun.oss.model.AccessControlList;
 import com.aliyun.oss.model.Bucket;
@@ -11,44 +11,44 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-class OssBucketServiceTest {
+class AliyunBucketServiceTest {
 
-    private static OssBucketService ossBucketService;
+    private static AliyunBucketService aliyunBucketService;
 
     private static String bucketName = "xxxxxx";
 
     @BeforeAll
     static void init() {
-        OssProperties ossProperties = new OssProperties();
+        OssProperties.Aliyun ossProperties = new OssProperties.Aliyun();
         ossProperties.setEndpoint("xxxxxx");
         ossProperties.setAccessKeyId("xxxxxx");
         ossProperties.setAccessKeySecret("xxxxxx");
         ossProperties.setBucketName("xxxxxx");
         ossProperties.setEnable(true);
-        ossBucketService = new OssBucketService(ossProperties);
+        aliyunBucketService = new AliyunBucketService(ossProperties);
     }
 
     @Test
     void listBuckets() {
-        List<Bucket> buckets = ossBucketService.listBuckets();
+        List<Bucket> buckets = aliyunBucketService.listBuckets();
         buckets.forEach(System.out::println);
     }
 
     @Test
     void bucketExist() {
-        boolean result = ossBucketService.bucketExist();
+        boolean result = aliyunBucketService.bucketExist();
         Assertions.assertTrue(result);
     }
 
     @Test
     void testBucketExist() {
-        boolean result = ossBucketService.bucketExist("0123");
+        boolean result = aliyunBucketService.bucketExist("0123");
         System.out.println(result);
     }
 
     @Test
     void createBucket() {
-        boolean bucket = ossBucketService.createBucket("0123");
+        boolean bucket = aliyunBucketService.createBucket("0123");
         System.out.println(bucket);
     }
 
@@ -58,25 +58,25 @@ class OssBucketServiceTest {
 
     @Test
     void getBucketLocation() {
-        String bucketLocation = ossBucketService.getBucketLocation(bucketName);
+        String bucketLocation = aliyunBucketService.getBucketLocation(bucketName);
         System.out.println(bucketLocation);
     }
 
     @Test
     void getBucketInfo() {
-        BucketInfo bucketInfo = ossBucketService.getBucketInfo(bucketName);
+        BucketInfo bucketInfo = aliyunBucketService.getBucketInfo(bucketName);
         System.out.println(bucketInfo);
     }
 
     @Test
     void setBucketAcl() {
-        AccessControlList accessControlList = ossBucketService.setBucketAcl(bucketName, CannedAccessControlList.Private);
+        AccessControlList accessControlList = aliyunBucketService.setBucketAcl(bucketName, CannedAccessControlList.Private);
         System.out.println(accessControlList);
     }
 
     @Test
     void getBucketAcl() {
-        AccessControlList bucketAcl = ossBucketService.getBucketAcl(bucketName);
+        AccessControlList bucketAcl = aliyunBucketService.getBucketAcl(bucketName);
         System.out.println(bucketAcl);
     }
 }
