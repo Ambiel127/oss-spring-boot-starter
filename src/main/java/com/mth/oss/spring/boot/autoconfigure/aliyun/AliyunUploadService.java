@@ -86,7 +86,7 @@ public class AliyunUploadService implements UploadService {
 
     @Override
     public String generatePresignedUrl(String objectKey, int duration, TimeUnit unit) {
-        return generatePresignedUrl(objectKey, unit.toMinutes(duration));
+        return generatePresignedUrl(objectKey, unit.toSeconds(duration));
     }
 
     /**
@@ -122,7 +122,7 @@ public class AliyunUploadService implements UploadService {
      * 生成签名 URL 授权访问
      *
      * @param objectKey  Object 完整路径
-     * @param expiration 签名 url 过期时长，单位分钟
+     * @param expiration 签名 url 过期时长，单位秒
      * @return 授权访问 URL 对象
      */
     public String generatePresignedUrl(String objectKey, Long expiration) {
@@ -133,7 +133,7 @@ public class AliyunUploadService implements UploadService {
         // 过期时间为空，则默认1小时
         long expiry = Objects.isNull(expiration) ? ossProperties.getExpiration() : expiration;
         // 转换为毫秒
-        long expiryMillis = TimeUnit.MINUTES.toMillis(expiry);
+        long expiryMillis = TimeUnit.SECONDS.toMillis(expiry);
 
         // 过期date
         Date expirationDate = new Date(System.currentTimeMillis() + expiryMillis);

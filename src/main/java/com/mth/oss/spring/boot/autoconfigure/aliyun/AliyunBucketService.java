@@ -24,11 +24,6 @@ public class AliyunBucketService implements BucketService {
     }
 
 
-    /**
-     * 列举存储空间
-     *
-     * @return 桶列表
-     */
     @Override
     public List<Bucket> listBuckets() {
         if (!ossProperties.getEnable()) {
@@ -43,11 +38,6 @@ public class AliyunBucketService implements BucketService {
         }
     }
 
-    /**
-     * 判断存储空间是否存在
-     *
-     * @return 存在true；不存在false
-     */
     @Override
     public boolean bucketExist() {
         if (!ossProperties.getEnable()) {
@@ -62,12 +52,6 @@ public class AliyunBucketService implements BucketService {
         }
     }
 
-    /**
-     * 判断存储空间是否存在
-     *
-     * @param bucketName 桶名称
-     * @return 存在true；不存在false
-     */
     @Override
     public boolean bucketExist(String bucketName) {
         if (!ossProperties.getEnable()) {
@@ -82,12 +66,6 @@ public class AliyunBucketService implements BucketService {
         }
     }
 
-    /**
-     * 创建存储空间
-     *
-     * @param bucketName 桶名称
-     * @return 是否创建成功，创建成功true；创建失败false
-     */
     @Override
     public boolean createBucket(String bucketName) {
         if (!ossProperties.getEnable()) {
@@ -104,6 +82,22 @@ public class AliyunBucketService implements BucketService {
             ossClient.createBucket(createBucketRequest);
 
             return ossClient.doesBucketExist(bucketName);
+        } finally {
+            ossClient.shutdown();
+        }
+    }
+
+    @Override
+    public boolean deleteBucket(String bucketName) {
+        if (!ossProperties.getEnable()) {
+            return false;
+        }
+
+        OSS ossClient = getClient();
+        try {
+            ossClient.deleteBucket(bucketName);
+
+            return !ossClient.doesBucketExist(bucketName);
         } finally {
             ossClient.shutdown();
         }
@@ -126,28 +120,6 @@ public class AliyunBucketService implements BucketService {
             ossClient.createBucket(createBucketRequest);
 
             return ossClient.doesBucketExist(createBucketRequest.getBucketName());
-        } finally {
-            ossClient.shutdown();
-        }
-    }
-
-    /**
-     * 删除存储空间
-     *
-     * @param bucketName 桶名称
-     * @return 是否删除成功，删除成功true；删除失败false
-     */
-    @Override
-    public boolean deleteBucket(String bucketName) {
-        if (!ossProperties.getEnable()) {
-            return false;
-        }
-
-        OSS ossClient = getClient();
-        try {
-            ossClient.deleteBucket(bucketName);
-
-            return !ossClient.doesBucketExist(bucketName);
         } finally {
             ossClient.shutdown();
         }

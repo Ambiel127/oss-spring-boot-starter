@@ -7,16 +7,18 @@ import com.aliyun.oss.model.*;
 import com.mth.oss.spring.boot.autoconfigure.OssProperties;
 import com.mth.oss.spring.boot.autoconfigure.service.ObjectManageService;
 import org.apache.commons.logging.Log;
+import org.springframework.util.StringUtils;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static com.aliyun.oss.internal.OSSConstants.URL_ENCODING;
 
 /**
- *  Aliyun oss 管理文件
+ * Aliyun oss 管理文件
  *
  * @author <a href="mailto:ambiel127@163.com">Matianhao</a>
  * @since 1.0
@@ -84,12 +86,26 @@ public class AliyunObjectManageService implements ObjectManageService {
 
     @Override
     public Iterable<OSSObjectSummary> listObjects(String prefix) {
-        return listObjects(new ListObjectsRequest(ossProperties.getBucketName(), prefix, null, null, null));
+        String trimPathPrefix = prefix;
+
+        // 处理路径前后分隔符 /
+        if (Objects.nonNull(prefix)) {
+            trimPathPrefix = StringUtils.trimTrailingCharacter(
+                    StringUtils.trimLeadingCharacter(prefix, '/'), '/');
+        }
+        return listObjects(new ListObjectsRequest(ossProperties.getBucketName(), trimPathPrefix, null, null, null));
     }
 
     @Override
     public Iterable<OSSObjectSummary> listObjects(String prefix, int maxKeys) {
-        return listObjects(new ListObjectsRequest(ossProperties.getBucketName(), prefix, null, null, maxKeys));
+        String trimPathPrefix = prefix;
+
+        // 处理路径前后分隔符 /
+        if (Objects.nonNull(prefix)) {
+            trimPathPrefix = StringUtils.trimTrailingCharacter(
+                    StringUtils.trimLeadingCharacter(prefix, '/'), '/');
+        }
+        return listObjects(new ListObjectsRequest(ossProperties.getBucketName(), trimPathPrefix, null, null, maxKeys));
     }
 
     @Override
@@ -118,6 +134,7 @@ public class AliyunObjectManageService implements ObjectManageService {
         try {
             DeleteObjectsResult deleteResult = ossClient.deleteObjects(
                     new DeleteObjectsRequest(ossProperties.getBucketName())
+                            .withQuiet(true)
                             .withKeys(objectKeys)
                             .withEncodingType(URL_ENCODING));
             // 删除失败的文件列表
@@ -165,6 +182,8 @@ public class AliyunObjectManageService implements ObjectManageService {
 
     /**
      * 删除指定目录及目录下的文件
+     * <p>
+     * 警告！！如果以下示例代码中前缀prefix的值为空字符串或者NULL，将会删除整个Bucket内的所有文件，请谨慎使用。
      *
      * @param prefix 指定前缀
      * @return 被删除的文件 key 集合
@@ -181,11 +200,18 @@ public class AliyunObjectManageService implements ObjectManageService {
         OSS ossClient = getClient();
         String nextMarker = null;
         ObjectListing objectListing;
+
+        // 处理路径前后分隔符 /
+        String trimPathPrefix = prefix;
+        if (Objects.nonNull(prefix)) {
+            trimPathPrefix = StringUtils.trimTrailingCharacter(
+                    StringUtils.trimLeadingCharacter(prefix, '/'), '/');
+        }
         try {
             do {
                 // 查询指定目录下的文件
                 ListObjectsRequest listObjectsRequest = new ListObjectsRequest(ossProperties.getBucketName())
-                        .withPrefix(prefix)
+                        .withPrefix(trimPathPrefix)
                         .withMarker(nextMarker);
                 objectListing = ossClient.listObjects(listObjectsRequest);
 
@@ -198,6 +224,7 @@ public class AliyunObjectManageService implements ObjectManageService {
 
                     // 删除文件
                     DeleteObjectsRequest deleteObjectsRequest = new DeleteObjectsRequest(ossProperties.getBucketName())
+                            .withQuiet(true)
                             .withKeys(keys)
                             .withEncodingType(URL_ENCODING);
                     DeleteObjectsResult deleteObjectsResult = ossClient.deleteObjects(deleteObjectsRequest);
@@ -206,7 +233,7 @@ public class AliyunObjectManageService implements ObjectManageService {
                     try {
                         for (String obj : deletedObjects) {
                             String deleteObj = URLDecoder.decode(obj, "UTF-8");
-                            log.info("delete object - key name: " + deleteObj);
+                            log.info("unsuccessfully deleted object - key name: " + deleteObj);
                         }
                     } catch (UnsupportedEncodingException e) {
                         e.printStackTrace();

@@ -88,7 +88,7 @@ public interface ObjectManageService {
     /**
      * 拷贝文件
      * <p>
-     * 将源Bucket中的文件（Object）复制到同一地域下相同或不同目标Bucket中
+     * 将源Bucket中的文件（Object）复制到同一地域下同一目标Bucket中
      *
      * @param sourceKey      源Object完整路径
      * @param destinationKey 目标Object完整路径

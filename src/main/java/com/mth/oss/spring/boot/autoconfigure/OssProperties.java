@@ -54,11 +54,11 @@ public class OssProperties {
          */
         private String bucketName;
         /**
-         * 签名URL授权访问有效时间（默认1小时 单位分钟）
+         * 签名URL授权访问有效时间（默认1小时 单位秒）
          *
          * @since 1.1
          */
-        private Integer expiration = 60;
+        private Integer expiration = 3600;
         /**
          * 组件是否开启注入，true时开启
          */
@@ -148,11 +148,11 @@ public class OssProperties {
          */
         private String bucketName;
         /**
-         * 签名URL授权访问有效时间（默认1小时 单位分钟）
+         * 签名URL授权访问有效时间（默认1小时 单位秒）
          *
          * @since 1.1
          */
-        private Integer expiration = 60;
+        private Integer expiration = 3600;
         /**
          * 组件是否开启注入，true时开启
          */
