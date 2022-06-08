@@ -1,7 +1,7 @@
 package com.mth.oss.spring.boot.autoconfigure.aliyun;
 
+import com.aliyun.oss.OSSException;
 import com.aliyun.oss.model.AccessControlList;
-import com.aliyun.oss.model.Bucket;
 import com.aliyun.oss.model.BucketInfo;
 import com.aliyun.oss.model.CannedAccessControlList;
 import com.mth.oss.spring.boot.autoconfigure.OssProperties;
@@ -9,13 +9,11 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
-
 class AliyunBucketServiceTest {
 
     private static AliyunBucketService aliyunBucketService;
 
-    private static String bucketName = "xxxxxx";
+    private static String bucketName;
 
     @BeforeAll
     static void init() {
@@ -26,57 +24,76 @@ class AliyunBucketServiceTest {
         ossProperties.setBucketName("xxxxxx");
         ossProperties.setEnable(true);
         aliyunBucketService = new AliyunBucketService(ossProperties);
+        bucketName = ossProperties.getBucketName();
     }
 
     @Test
-    void listBuckets() {
-        List<Bucket> buckets = aliyunBucketService.listBuckets();
-        buckets.forEach(System.out::println);
+    void testListBuckets() {
+        // 异常测试用例
+        Assertions.assertThrows(OSSException.class, () -> aliyunBucketService.listBuckets());
+
+        // 正常测试用例
+        // List<Bucket> buckets = aliyunBucketService.listBuckets();
+        // Assertions.assertNotNull(buckets);
+        // Assertions.assertNotEquals(0, buckets.size());
     }
 
     @Test
-    void bucketExist() {
+    void testBucketExist() {
         boolean result = aliyunBucketService.bucketExist();
         Assertions.assertTrue(result);
     }
 
     @Test
-    void testBucketExist() {
-        boolean result = aliyunBucketService.bucketExist("0123");
-        System.out.println(result);
+    void testBucketExist1() {
+        boolean result = aliyunBucketService.bucketExist("do-not-exist-bucketname");
+        Assertions.assertFalse(result);
     }
 
     @Test
-    void createBucket() {
-        boolean bucket = aliyunBucketService.createBucket("0123");
-        System.out.println(bucket);
+    void testCreateBucket() {
+        // 异常测试用例
+        Assertions.assertThrows(OSSException.class, () -> aliyunBucketService.createBucket("do-not-exist-bucketname"));
+
+        // 正常测试用例
+        // boolean result = aliyunBucketService.createBucket("do-not-exist-bucketname");
+        // Assertions.assertTrue(result);
     }
 
     @Test
-    void deleteBucket() {
+    void testDeleteBucket() {
+        // 异常测试用例
+        Assertions.assertThrows(OSSException.class, () -> aliyunBucketService.deleteBucket("do-not-exist-bucketname"));
+
+        // 正常测试用例
+        // boolean result = aliyunBucketService.deleteBucket("do-not-exist-bucketname");
+        // Assertions.assertTrue(result);
     }
 
     @Test
-    void getBucketLocation() {
+    void testGetBucketLocation() {
         String bucketLocation = aliyunBucketService.getBucketLocation(bucketName);
-        System.out.println(bucketLocation);
+        Assertions.assertNotNull(bucketLocation);
     }
 
     @Test
-    void getBucketInfo() {
+    void testGetBucketInfo() {
         BucketInfo bucketInfo = aliyunBucketService.getBucketInfo(bucketName);
-        System.out.println(bucketInfo);
+        Assertions.assertNotNull(bucketInfo);
     }
 
     @Test
-    void setBucketAcl() {
-        AccessControlList accessControlList = aliyunBucketService.setBucketAcl(bucketName, CannedAccessControlList.Private);
-        System.out.println(accessControlList);
+    void testSetBucketAcl() {
+        CannedAccessControlList access = CannedAccessControlList.Private;
+        AccessControlList accessControlList = aliyunBucketService.setBucketAcl(bucketName, access);
+
+        Assertions.assertNotNull(accessControlList);
+        Assertions.assertEquals(access, accessControlList.getCannedACL());
     }
 
     @Test
-    void getBucketAcl() {
+    void testGetBucketAcl() {
         AccessControlList bucketAcl = aliyunBucketService.getBucketAcl(bucketName);
-        System.out.println(bucketAcl);
+        Assertions.assertNotNull(bucketAcl);
     }
 }
