@@ -3,6 +3,7 @@ package com.mth.oss.spring.boot.autoconfigure.minio;
 import com.mth.oss.spring.boot.autoconfigure.OssProperties;
 import com.mth.oss.spring.boot.autoconfigure.service.ObjectManageService;
 import io.minio.*;
+import io.minio.messages.DeleteError;
 import io.minio.messages.DeleteObject;
 import io.minio.messages.Item;
 
@@ -25,6 +26,7 @@ public class MinioObjectManageService implements ObjectManageService {
         this.ossProperties = ossProperties;
     }
 
+
     @Override
     public boolean objectExist(String objectKey) {
         return objectExist(ossProperties.getBucketName(), objectKey);
@@ -38,15 +40,20 @@ public class MinioObjectManageService implements ObjectManageService {
 
         MinioClient minioClient = getClient();
 
-        // 下载文件
-        GetObjectArgs args = GetObjectArgs.builder()
+        // 获取文件元信息
+        StatObjectArgs args = StatObjectArgs.builder()
                 .bucket(bucketName)
                 .object(objectKey)
                 .build();
 
-        try (GetObjectResponse response = minioClient.getObject(args)) {
-            // todo [matianhao] 如何判断存在？
-            return Objects.nonNull(response);
+        try {
+            StatObjectResponse result = minioClient.statObject(args);
+            // 响应不为空
+            boolean resultNonNull = Objects.nonNull(result);
+            // 响应文件信息与入参相同
+            boolean sameObject = Objects.equals(bucketName, result.bucket()) && Objects.equals(objectKey, result.object());
+
+            return resultNonNull && sameObject;
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -76,34 +83,39 @@ public class MinioObjectManageService implements ObjectManageService {
     }
 
     @Override
-    public Iterable<?> listObjects() {
+    public Iterable<Result<Item>> listObjects() {
         return listObjects(ListObjectsArgs.builder()
                                    .bucket(ossProperties.getBucketName())
+                                   .maxKeys(100)
+                                   .recursive(true)
                                    .build());
     }
 
     @Override
-    public Iterable<?> listObjects(int maxKeys) {
+    public Iterable<Result<Item>> listObjects(int maxKeys) {
         return listObjects(ListObjectsArgs.builder()
                                    .bucket(ossProperties.getBucketName())
                                    .maxKeys(maxKeys)
+                                   .recursive(true)
                                    .build());
     }
 
     @Override
-    public Iterable<?> listObjects(String prefix) {
+    public Iterable<Result<Item>> listObjects(String prefix) {
         return listObjects(ListObjectsArgs.builder()
                                    .bucket(ossProperties.getBucketName())
                                    .prefix(prefix)
+                                   .recursive(true)
                                    .build());
     }
 
     @Override
-    public Iterable<?> listObjects(String prefix, int maxKeys) {
+    public Iterable<Result<Item>> listObjects(String prefix, int maxKeys) {
         return listObjects(ListObjectsArgs.builder()
                                    .bucket(ossProperties.getBucketName())
                                    .prefix(prefix)
                                    .maxKeys(maxKeys)
+                                   .recursive(true)
                                    .build());
     }
 
@@ -124,7 +136,7 @@ public class MinioObjectManageService implements ObjectManageService {
             minioClient.removeObject(args);
 
             // 查询是否存在
-            return objectExist(objectKey);
+            return !objectExist(objectKey);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -133,7 +145,7 @@ public class MinioObjectManageService implements ObjectManageService {
     }
 
     @Override
-    public Iterable<?> deleteObjects(List<String> objectKeys) {
+    public Iterable<Result<DeleteError>> deleteObjects(List<String> objectKeys) {
         if (!ossProperties.getEnable()) {
             return new ArrayList<>();
         }

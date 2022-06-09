@@ -32,6 +32,7 @@ public class MinioUploadService implements UploadService {
         this.minioBucketService = aliyunBucketService;
     }
 
+
     @Override
     public String upload(File file) {
         return upload(file, null);
@@ -42,36 +43,47 @@ public class MinioUploadService implements UploadService {
         // 重新命名后的 Object 完整路径
         String objectKey = getDefaultObjectKey(file, path);
 
-        // 创建 PutObjectArgs 对象
-        PutObjectArgs args = null;
-
         try (FileInputStream fileInputStream = new FileInputStream(file)) {
-            args = PutObjectArgs.builder()
+            // 创建 PutObjectArgs 对象
+            PutObjectArgs args = PutObjectArgs.builder()
                     .bucket(ossProperties.getBucketName())
                     .object(objectKey)
                     .stream(fileInputStream, fileInputStream.available(), -1)
                     .build();
+            return upload(args);
+
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        return upload(args);
+        return "an error occurred in oss spring boot starter";
     }
 
     @Override
     public String upload(InputStream inputStream, String objectKey) {
-        PutObjectArgs args = null;
+        PutObjectArgs args;
         try {
             args = PutObjectArgs.builder()
                     .bucket(ossProperties.getBucketName())
                     .object(objectKey)
                     .stream(inputStream, inputStream.available(), -1)
                     .build();
+            return upload(args);
+
         } catch (IOException e) {
             e.printStackTrace();
+
+        } finally {
+            if (inputStream != null) {
+                try {
+                    inputStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
 
-        return upload(args);
+        return "an error occurred in oss spring boot starter";
     }
 
     @Override
@@ -92,20 +104,20 @@ public class MinioUploadService implements UploadService {
             objectKey = trimPathPrefix + "/" + file.getName();
         }
 
-        // 创建 PutObjectArgs 对象
-        PutObjectArgs args = null;
-
         try (FileInputStream fileInputStream = new FileInputStream(file)) {
-            args = PutObjectArgs.builder()
+            // 创建 PutObjectArgs 对象
+            PutObjectArgs args = PutObjectArgs.builder()
                     .bucket(ossProperties.getBucketName())
                     .object(objectKey)
                     .stream(fileInputStream, fileInputStream.available(), -1)
                     .build();
+            return upload(args);
+
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        return upload(args);
+        return "an error occurred in oss spring boot starter";
     }
 
     @Override
@@ -115,7 +127,7 @@ public class MinioUploadService implements UploadService {
 
     @Override
     public String generatePresignedUrl(String objectKey, int duration, TimeUnit unit) {
-        return generatePresignedUrl(objectKey, unit.toMinutes(duration));
+        return generatePresignedUrl(objectKey, unit.toSeconds(duration));
     }
 
     /**
@@ -153,7 +165,7 @@ public class MinioUploadService implements UploadService {
      * 生成签名 URL 授权访问
      *
      * @param objectKey  Object 完整路径
-     * @param expiration 签名 url 过期时长，单位分钟
+     * @param expiration 签名 url 过期时长，单位秒
      * @return 授权访问 URL 对象
      */
     public String generatePresignedUrl(String objectKey, Long expiration) {
@@ -178,11 +190,11 @@ public class MinioUploadService implements UploadService {
                     .method(Method.GET)
                     .bucket(ossProperties.getBucketName())
                     .object(key)
-                    .expiry(expiry, TimeUnit.MINUTES)
+                    .expiry(expiry, TimeUnit.SECONDS)
                     .build();
 
             return minioClient.getPresignedObjectUrl(urlArgs);
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 

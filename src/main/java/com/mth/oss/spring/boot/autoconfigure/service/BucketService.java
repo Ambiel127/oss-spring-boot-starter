@@ -1,6 +1,6 @@
 package com.mth.oss.spring.boot.autoconfigure.service;
 
-import java.util.Collection;
+import java.util.List;
 
 /**
  * 存储空间 bucket 操作
@@ -16,7 +16,7 @@ public interface BucketService {
      *
      * @return 桶列表
      */
-    Collection<?> listBuckets();
+    List<?> listBuckets();
 
     /**
      * 判断存储空间是否存在

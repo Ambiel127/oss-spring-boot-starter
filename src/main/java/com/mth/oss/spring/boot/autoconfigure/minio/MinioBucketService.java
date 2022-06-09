@@ -6,9 +6,10 @@ import io.minio.BucketExistsArgs;
 import io.minio.MakeBucketArgs;
 import io.minio.MinioClient;
 import io.minio.RemoveBucketArgs;
+import io.minio.messages.Bucket;
 
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.List;
 
 /**
  * Minio 存储空间 bucket 操作
@@ -24,8 +25,9 @@ public class MinioBucketService implements BucketService {
         this.ossProperties = ossProperties;
     }
 
+
     @Override
-    public Collection<?> listBuckets() {
+    public List<Bucket> listBuckets() {
         if (!ossProperties.getEnable()) {
             return new ArrayList<>();
         }

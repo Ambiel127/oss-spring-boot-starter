@@ -24,6 +24,7 @@ public class MinioDownloadService implements DownloadService {
         this.ossProperties = ossProperties;
     }
 
+
     @Override
     public void download(String objectKey, File file) {
         if (!ossProperties.getEnable()) {
