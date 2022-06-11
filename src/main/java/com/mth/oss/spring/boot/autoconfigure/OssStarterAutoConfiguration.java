@@ -1,10 +1,5 @@
 package com.mth.oss.spring.boot.autoconfigure;
 
-/**
- * @author MaTianHao
- * @date 2022/1/8
- */
-
 import com.mth.oss.spring.boot.autoconfigure.aliyun.AliyunStorage;
 import com.mth.oss.spring.boot.autoconfigure.minio.MinioStorage;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -14,6 +9,12 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+/**
+ * Bean 注入配置
+ *
+ * @author <a href="mailto:ambiel127@163.com">Matianhao</a>
+ * @since 1.0
+ */
 @Configuration
 @EnableConfigurationProperties(OssProperties.class)
 @ConditionalOnWebApplication
