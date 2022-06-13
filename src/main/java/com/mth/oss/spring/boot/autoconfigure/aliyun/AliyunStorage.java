@@ -41,7 +41,7 @@ public class AliyunStorage implements OssStorage {
      *
      * @return 客户端对象
      */
-    private OSS getClient() {
+    public OSS getClient() {
         return new OSSClientBuilder()
                 .build(ossProperties.getEndpoint(),
                        ossProperties.getAccessKeyId(),
