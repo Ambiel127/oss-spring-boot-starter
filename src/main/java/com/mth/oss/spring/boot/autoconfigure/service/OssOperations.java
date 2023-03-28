@@ -1,14 +1,17 @@
 package com.mth.oss.spring.boot.autoconfigure.service;
 
+import com.amazonaws.services.s3.model.*;
 import org.springframework.util.StringUtils;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.URL;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -19,7 +22,7 @@ import java.util.concurrent.TimeUnit;
  * @author <a href="mailto:ambiel127@163.com">Matianhao</a>
  * @since 1.2
  */
-public interface OssStorage {
+public interface OssOperations {
 
     /**
      * 时间戳字符串格式化 yyyyMMddHHmmssSSS
@@ -32,7 +35,6 @@ public interface OssStorage {
     DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMdd");
 
 
-
     // ------------------------------------------------------------
     // ----------------------- bucket 管理 ------------------------
     // ------------------------------------------------------------
@@ -42,7 +44,7 @@ public interface OssStorage {
      *
      * @return 桶列表
      */
-    List<?> listBuckets();
+    List<Bucket> listBuckets();
 
     /**
      * 判断存储空间是否存在
@@ -67,7 +69,6 @@ public interface OssStorage {
      */
     boolean createBucket(String bucketName);
 
-
     /**
      * 删除存储空间
      *
@@ -77,7 +78,6 @@ public interface OssStorage {
     boolean deleteBucket(String bucketName);
 
 
-
     // ------------------------------------------------------------
     // ----------------------- upload 上传 ------------------------
     // ------------------------------------------------------------
@@ -85,86 +85,98 @@ public interface OssStorage {
     /**
      * 通用上传文件
      * <p>
-     * 如 file 文件名为 temp.txt，则默认 Object 完整路径为 "temp_yyyyMMddHHmmssSSS.txt"
+     * 默认前缀为 yyyyMMdd 日期文件夹；
+     * 如 file 文件名为 temp.txt，则默认 Object 完整路径为 "yyyyMMdd/temp_yyyyMMddHHmmssSSS.txt"
+     * <p>
      * 场景：通用业务上传，Object 路径默认添加时间戳，避免重名导致文件覆盖
      *
      * @param file 文件
-     * @return 存储对象名称，含相对路径
+     * @return 存储对象完整路径
      */
     String upload(File file);
 
     /**
-     * 通用上传文件
-     * <p>
-     * - 如 file 文件名为 temp.txt，则默认 Object 完整路径为 "temp_yyyyMMddHHmmssSSS.txt"
-     * - path 路径为 null 时，前缀默认为 yyyyMMdd 日期文件夹
-     * 场景：通用业务上传，Object 路径默认添加时间戳，避免重名导致文件覆盖
+     * 通用上传文件，指定 Object 完整路径
      *
-     * @param file 文件
-     * @param path 存储路径前缀
-     * @return 存储对象名称，含相对路径
+     * @param file      文件
+     * @param objectKey Object 完整路径，不能包含Bucket名称，例如 exampleDir/exampleObject.txt
+     * @return 存储对象完整路径
      */
-    String upload(File file, String path);
-
-    // todo [matianhao] 完整路径 objectKey 交由用户自定义
+    String upload(File file, String objectKey);
 
     /**
      * 流式上传
      *
      * @param inputStream 流对象
-     *                    文件流：new FileInputStream("D:\\localpath\\examplefile.txt");
-     *                    网络流：new URL("https://www.aliyun.com/").openStream();
+     *                    文件流：new FileInputStream("D:\\path\\exampleFile.txt");
+     *                    网络流：new URL("https://www.example.com/").openStream();
      *                    字节数组：new ByteArrayInputStream("Hello OSS".getBytes())
-     * @param objectKey   Object 完整路径
-     * @return 存储对象名称，含相对路径
+     * @param objectKey   Object 完整路径，不能包含Bucket名称，例如 exampleDir/exampleObject.txt
+     * @return 存储对象完整路径
      */
     String upload(InputStream inputStream, String objectKey);
 
+
     /**
-     * 文件上传并覆盖同名文件
+     * 流式上传
+     *
+     * @param inputStream 流对象
+     *                    文件流：new FileInputStream("D:\\path\\exampleFile.txt");
+     *                    网络流：new URL("https://www.example.com/").openStream();
+     *                    字节数组：new ByteArrayInputStream("Hello OSS".getBytes())
+     * @param objectKey   Object 完整路径，不能包含Bucket名称，例如 exampleDir/exampleObject.txt
+     * @return 存储对象完整路径
+     */
+    String upload(InputStream inputStream, String objectKey, String contentType);
+
+    /**
+     * 文件上传，用户可自行组装请求对象
+     *
+     * @param putObjectRequest 请求对象
+     * @return 存储对象完整路径
+     */
+    String upload(PutObjectRequest putObjectRequest);
+
+    /**
+     * 文件上传并替换同名文件
      * <p>
      * 默认 Object 完整路径为 file 文件名
+     * <p>
      * 场景：使用手册、说明文件等，需要替换文件但不修改 Object 路径的场景（路径不变、授权访问的 URL 也就不变）
      *
      * @param file 文件
-     * @return 存储对象名称，含相对路径
+     * @return 存储对象完整路径
      */
-    String uploadAndOverwrite(File file);
+    String replaceUpload(File file);
 
     /**
-     * 文件上传并覆盖同名文件，指定路径
+     * 文件上传并替换同名文件，指定 Object 完整路径
      * <p>
-     * 如 path 为 dir，file 文件名为 temp.txt，则默认 Object 完整路径为 dir/temp.txt
      * 场景：使用手册、说明文件等，需要替换文件但不修改 Object 路径的场景（路径不变、授权访问的 URL 也就不变）
      *
-     * @param file 文件
-     * @param path 存储路径前缀
-     * @return 存储对象名称，含相对路径
+     * @param file      文件
+     * @param objectKey Object 完整路径，不能包含Bucket名称，例如 exampleDir/exampleObject.txt
+     * @return 存储对象完整路径
      */
-    String uploadAndOverwrite(File file, String path);
-
-    // todo [matianhao] 进度条，前端需要何种方式  {@link https://help.aliyun.com/document_detail/84796.html}
+    String replaceUpload(File file, String objectKey);
 
     /**
-     * 生成签名 URL 授权访问
-     * <p>
-     * 默认过期时间1小时
+     * 使用预签名 URL 上传对象
      *
      * @param objectKey Object 完整路径
-     * @return 授权访问 URL 对象
+     * @return 授权上传的 URL 对象
      */
-    String generatePresignedUrl(String objectKey);
+    URL presignedUrlForUpload(String objectKey);
 
     /**
-     * 生成签名 URL 授权访问
+     * 使用预签名 URL 上传对象
      *
      * @param objectKey Object 完整路径
      * @param duration  链接有效时长
      * @param unit      时间单位
-     * @return 授权访问 URL 对象
+     * @return 授权上传的 URL 对象
      */
-    String generatePresignedUrl(String objectKey, int duration, TimeUnit unit);
-
+    URL presignedUrlForUpload(String objectKey, int duration, TimeUnit unit);
 
 
     // ------------------------------------------------------------
@@ -172,13 +184,59 @@ public interface OssStorage {
     // ------------------------------------------------------------
 
     /**
+     * 生成签名 URL 授权访问
+     * <p>
+     * 默认过期时间1小时
+     *
+     * @param objectKey Object 完整路径
+     * @return 授权访问的 URL 对象
+     */
+    URL presignedUrlForAccess(String objectKey);
+
+    /**
+     * 生成签名 URL 授权访问
+     *
+     * @param objectKey Object 完整路径
+     * @param duration  链接有效时长
+     * @param unit      时间单位
+     * @return 授权访问的 URL 对象
+     */
+    URL presignedUrlForAccess(String objectKey, int duration, TimeUnit unit);
+
+    /**
+     * 下载到指定 File 中
+     *
+     * @param objectKey    Object 完整路径
+     * @param fullFilePath 指定下载文件的路径，如果本地存在该文件会覆盖，不存在则新建。
+     * @return 下载成功true；否则false
+     */
+    boolean download(String objectKey, String fullFilePath);
+
+    /**
      * 下载到指定 File 中
      *
      * @param objectKey Object 完整路径
-     * @param file      指定的本地路径，如果指定的本地文件存在会覆盖，不存在则新建。
+     * @param file      指定下载的文件，如果本地存在该文件会覆盖，不存在则新建。
+     * @return 下载成功true；否则false
      */
-    void download(String objectKey, File file);
+    boolean download(String objectKey, File file);
 
+    /**
+     * 下载 byte 数组
+     *
+     * @param objectKey Object 完整路径
+     * @return byte数组
+     */
+    byte[] download(String objectKey) throws IOException;
+
+    /**
+     * 下载到指定输出流
+     *
+     * @param objectKey    Object 完整路径
+     * @param outputStream 输出流
+     * @return 下载成功true；否则false
+     */
+    void download(String objectKey, OutputStream outputStream) throws IOException;
 
 
     // ------------------------------------------------------------
@@ -203,19 +261,28 @@ public interface OssStorage {
     boolean objectExist(String bucketName, String objectKey);
 
     /**
-     * 获取文件元信息
+     * 获取文件
      *
      * @param objectKey Object完整路径，不能包含Bucket名称
-     * @return 文件元信息对象
+     * @return 文件对象
      */
-    Object getObjectMetadata(String objectKey);
+    S3Object getObject(String objectKey);
+
+    /**
+     * 获取文件
+     *
+     * @param bucketName 存储空间名称
+     * @param objectKey Object完整路径，不能包含Bucket名称
+     * @return 文件对象
+     */
+    S3Object getObject(String bucketName, String objectKey);
 
     /**
      * 列举文件
      *
-     * @return 集合文件对象，默认100个
+     * @return 集合文件对象
      */
-    Iterable<?> listObjects();
+    List<S3ObjectSummary> listObjects();
 
     /**
      * 列举文件
@@ -223,24 +290,32 @@ public interface OssStorage {
      * @param maxKeys 最大个数
      * @return 集合文件对象
      */
-    Iterable<?> listObjects(int maxKeys);
+    List<S3ObjectSummary> listObjects(int maxKeys);
 
     /**
      * 列举文件
      *
-     * @param prefix 指定前缀
+     * @param prefix 指定路径前缀
      * @return 集合文件对象
      */
-    Iterable<?> listObjects(String prefix);
+    List<S3ObjectSummary> listObjects(String prefix);
 
     /**
      * 列举文件
      *
-     * @param prefix  指定前缀
+     * @param prefix  指定路径前缀
      * @param maxKeys 最大个数
      * @return 集合文件对象
      */
-    Iterable<?> listObjects(String prefix, int maxKeys);
+    List<S3ObjectSummary> listObjects(String prefix, int maxKeys);
+
+    /**
+     * 列举文件
+     *
+     * @param request 请求对象
+     * @return 集合文件对象
+     */
+    List<S3ObjectSummary> listObjects(ListObjectsV2Request request);
 
     /**
      * 删除单个文件
@@ -258,7 +333,7 @@ public interface OssStorage {
      * @param objectKeys Object完整路径集合，不能包含Bucket名称
      * @return 删除失败的文件列表
      */
-    Iterable<?> deleteObjects(List<String> objectKeys);
+    List<DeleteObjectsResult.DeletedObject> deleteObjects(List<String> objectKeys);
 
     /**
      * 拷贝文件
@@ -285,7 +360,6 @@ public interface OssStorage {
     boolean copyObject(String sourceBucketName, String sourceKey, String destinationBucketName, String destinationKey);
 
 
-
     // ------------------------------------------------------------
     // ----------------------- 默认方法实现 ------------------------
     // ------------------------------------------------------------
@@ -309,16 +383,15 @@ public interface OssStorage {
     }
 
     /**
-     * 获取默认 objectkey 完整路径
+     * 获取默认 object key 完整路径
      * <p>
-     * - 如 file 文件名为 temp.txt，则默认 Object 完整路径为 "temp_yyyyMMddHHmmssSSS.txt"
-     * - path 路径为 null 时，前缀默认为 yyyyMMdd 日期文件夹
+     * 默认前缀为 yyyyMMdd 日期文件夹；
+     * 如 file 文件名为 temp.txt，则默认 Object 完整路径为 "yyyyMMdd/temp_yyyyMMddHHmmssSSS.txt"
      *
      * @param file 文件
-     * @param path 存储路径前缀
      * @return object 完整路径
      */
-    default String getDefaultObjectKey(File file, String path) {
+    default String getDefaultObjectKey(File file) {
 
         // 获取文件名称和扩展名
         String fileName = file.getName();
@@ -326,18 +399,25 @@ public interface OssStorage {
         String name = fileName.substring(0, fileName.lastIndexOf("."));
 
         // 路径前缀
-        String trimPathPrefix = getDefaultPathPrefix();
-        if (Objects.nonNull(path)) {
-            // 去除路径前后 / 字符
-            trimPathPrefix = StringUtils.trimTrailingCharacter(
-                    StringUtils.trimLeadingCharacter(path, '/'), '/');
-        }
+        String pathPrefix = getDefaultPathPrefix();
 
         // 时间戳字符串
         String dateTimeStr = getDateTimeStr();
 
         // 重新命名后的 Object 完整路径
-        return trimPathPrefix + "/" + name + "_" + dateTimeStr + extra;
+        return pathPrefix + "/" + name + "_" + dateTimeStr + extra;
     }
+
+    /**
+     * 去除路径前后 / 字符
+     *
+     * @param path 路径字符串
+     * @return string
+     */
+    default String trimPathCharacter(String path) {
+        return StringUtils.trimTrailingCharacter(
+                StringUtils.trimLeadingCharacter(path, '/'), '/');
+    }
+
 
 }

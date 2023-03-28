@@ -1,8 +1,7 @@
 package com.mth.oss.spring.boot.autoconfigure;
 
+import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-
-import java.util.StringJoiner;
 
 /**
  * oss 配置
@@ -10,213 +9,48 @@ import java.util.StringJoiner;
  * @author <a href="mailto:ambiel127@163.com">Matianhao</a>
  * @since 1.0
  */
+@Data
 @ConfigurationProperties(prefix = "oss")
 public class OssProperties {
 
-    private Aliyun aliyun;
-
-    private Minio minio;
-
-    public Aliyun getAliyun() {
-        return aliyun;
-    }
-
-    public void setAliyun(Aliyun aliyun) {
-        this.aliyun = aliyun;
-    }
-
-    public Minio getMinio() {
-        return minio;
-    }
-
-    public void setMinio(Minio minio) {
-        this.minio = minio;
-    }
-
     /**
-     * Aliyun oss 配置
+     * 组件是否开启注入，true时开启
      */
-    public static class Aliyun {
-        /**
-         * endpoint
-         */
-        private String endpoint;
-        /**
-         * accessKeyId
-         */
-        private String accessKeyId;
-        /**
-         * accessKeySecret
-         */
-        private String accessKeySecret;
-        /**
-         * 存储空间名
-         */
-        private String bucketName;
-        /**
-         * 签名URL授权访问有效时间（默认1小时 单位秒）
-         *
-         * @since 1.1
-         */
-        private Integer expiration = 3600;
-        /**
-         * 组件是否开启注入，true时开启
-         */
-        private Boolean enable;
-
-        public String getEndpoint() {
-            return endpoint;
-        }
-
-        public void setEndpoint(String endpoint) {
-            this.endpoint = endpoint;
-        }
-
-        public String getAccessKeyId() {
-            return accessKeyId;
-        }
-
-        public void setAccessKeyId(String accessKeyId) {
-            this.accessKeyId = accessKeyId;
-        }
-
-        public String getAccessKeySecret() {
-            return accessKeySecret;
-        }
-
-        public void setAccessKeySecret(String accessKeySecret) {
-            this.accessKeySecret = accessKeySecret;
-        }
-
-        public String getBucketName() {
-            return bucketName;
-        }
-
-        public void setBucketName(String bucketName) {
-            this.bucketName = bucketName;
-        }
-
-        public Integer getExpiration() {
-            return expiration;
-        }
-
-        public void setExpiration(Integer expiration) {
-            this.expiration = expiration;
-        }
-
-        public Boolean getEnable() {
-            return enable;
-        }
-
-        public void setEnable(Boolean enable) {
-            this.enable = enable;
-        }
-
-        @Override
-        public String toString() {
-            return new StringJoiner(", ", OssProperties.class.getSimpleName() + "[", "]")
-                    .add("endpoint='" + endpoint + "'")
-                    .add("accessKeyId='" + accessKeyId + "'")
-                    .add("accessKeySecret='" + accessKeySecret + "'")
-                    .add("bucketName='" + bucketName + "'")
-                    .add("expiration='" + expiration + "'")
-                    .add("enable=" + enable)
-                    .toString();
-        }
-    }
-
+    private Boolean enable;
     /**
-     * Minio oss 配置
+     * region
+     */
+    private String region;
+    /**
+     * endpoint
+     */
+    private String endpoint;
+    /**
+     * accessKeyId
+     */
+    private String accessKeyId;
+    /**
+     * accessKeySecret
+     */
+    private String accessKeySecret;
+    /**
+     * 存储空间名
+     */
+    private String bucketName;
+    /**
+     * 签名URL授权访问有效时间（默认1小时 单位秒）
      *
      * @since 1.1
      */
-    public static class Minio {
-        /**
-         * endpoint
-         */
-        private String endpoint;
-        /**
-         * accessKeyId
-         */
-        private String accessKeyId;
-        /**
-         * accessKeySecret
-         */
-        private String accessKeySecret;
-        /**
-         * 存储空间名
-         */
-        private String bucketName;
-        /**
-         * 签名URL授权访问有效时间（默认1小时 单位秒）
-         *
-         * @since 1.1
-         */
-        private Integer expiration = 3600;
-        /**
-         * 组件是否开启注入，true时开启
-         */
-        private Boolean enable;
-
-        public String getEndpoint() {
-            return endpoint;
-        }
-
-        public void setEndpoint(String endpoint) {
-            this.endpoint = endpoint;
-        }
-
-        public String getAccessKeyId() {
-            return accessKeyId;
-        }
-
-        public void setAccessKeyId(String accessKeyId) {
-            this.accessKeyId = accessKeyId;
-        }
-
-        public String getAccessKeySecret() {
-            return accessKeySecret;
-        }
-
-        public void setAccessKeySecret(String accessKeySecret) {
-            this.accessKeySecret = accessKeySecret;
-        }
-
-        public String getBucketName() {
-            return bucketName;
-        }
-
-        public void setBucketName(String bucketName) {
-            this.bucketName = bucketName;
-        }
-
-        public Integer getExpiration() {
-            return expiration;
-        }
-
-        public void setExpiration(Integer expiration) {
-            this.expiration = expiration;
-        }
-
-        public Boolean getEnable() {
-            return enable;
-        }
-
-        public void setEnable(Boolean enable) {
-            this.enable = enable;
-        }
-
-        @Override
-        public String toString() {
-            return new StringJoiner(", ", OssProperties.class.getSimpleName() + "[", "]")
-                    .add("endpoint='" + endpoint + "'")
-                    .add("accessKeyId='" + accessKeyId + "'")
-                    .add("accessKeySecret='" + accessKeySecret + "'")
-                    .add("bucketName='" + bucketName + "'")
-                    .add("expiration='" + expiration + "'")
-                    .add("enable=" + enable)
-                    .toString();
-        }
-    }
+    private Integer expiration = 3600;
+    /**
+     * S3支持路径（Path）请求风格和虚拟托管（Virtual Hosted）请求风格。
+     * Aliyun OSS 基于安全考虑，仅支持虚拟托管访问方式，应设置为false；
+     * 其余支持S3协议的客户端可以根据情况设置为true。
+     * 只是url的显示不一样。
+     *
+     * @since 1.3
+     */
+    private Boolean pathStyleAccess = false;
 
 }

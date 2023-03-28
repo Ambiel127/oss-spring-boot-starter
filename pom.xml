@@ -20,12 +20,19 @@
     <properties>
         <spring.boot.version>2.6.2</spring.boot.version>
         <java.version>1.8</java.version>
-        <aliyun.oss.version>3.14.0</aliyun.oss.version>
-        <minio.version>8.4.1</minio.version>
+        <aws.s3.version>1.12.430</aws.s3.version>
+        <lombok.version>1.18.22</lombok.version>
     </properties>
 
 
     <dependencies>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+            <version>${spring.boot.version}</version>
+            <scope>provided</scope>
+        </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -48,18 +55,19 @@
             <optional>true</optional>
         </dependency>
 
-        <!-- aliyun oss -->
+        <!--lombok 插件-->
         <dependency>
-            <groupId>com.aliyun.oss</groupId>
-            <artifactId>aliyun-sdk-oss</artifactId>
-            <version>${aliyun.oss.version}</version>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>${lombok.version}</version>
+            <optional>true</optional>
         </dependency>
 
-        <!-- minio -->
+        <!-- https://mvnrepository.com/artifact/com.amazonaws/aws-java-sdk-s3 -->
         <dependency>
-            <groupId>io.minio</groupId>
-            <artifactId>minio</artifactId>
-            <version>${minio.version}</version>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-java-sdk-s3</artifactId>
+            <version>${aws.s3.version}</version>
         </dependency>
 
 

@@ -1,0 +1,10 @@
+oss:
+  enable: true
+  #  expiration:
+
+  # minio
+  path-style-access: true
+  endpoint: https://play.min.io:9000
+  access-key-id: Q3AM3UQ867SPQQA43P2F
+  access-key-secret: zuf+tfteSlswRu7BJ86wekitnifILbZam1KYY3TG
+  bucket-name: oss-spring-boot-starter
