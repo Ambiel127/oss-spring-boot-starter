@@ -135,12 +135,12 @@ public class OssTemplate implements OssOperations {
     }
 
     @Override
-    public URL generatePresignedUrl(String objectKey) {
+    public URL presignedUrlForAccess(String objectKey) {
         return generatePresignedUrl(objectKey, null, HttpMethod.GET);
     }
 
     @Override
-    public URL generatePresignedUrl(String objectKey, int duration, TimeUnit unit) {
+    public URL presignedUrlForAccess(String objectKey, int duration, TimeUnit unit) {
         return generatePresignedUrl(objectKey, unit.toSeconds(duration), HttpMethod.GET);
     }
 

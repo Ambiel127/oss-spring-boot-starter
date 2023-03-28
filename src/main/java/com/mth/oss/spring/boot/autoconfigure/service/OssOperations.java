@@ -178,6 +178,11 @@ public interface OssOperations {
      */
     URL presignedUrlForUpload(String objectKey, int duration, TimeUnit unit);
 
+
+    // ------------------------------------------------------------
+    // ---------------------- download 下载 -----------------------
+    // ------------------------------------------------------------
+
     /**
      * 生成签名 URL 授权访问
      * <p>
@@ -186,7 +191,7 @@ public interface OssOperations {
      * @param objectKey Object 完整路径
      * @return 授权访问的 URL 对象
      */
-    URL generatePresignedUrl(String objectKey);
+    URL presignedUrlForAccess(String objectKey);
 
     /**
      * 生成签名 URL 授权访问
@@ -196,12 +201,7 @@ public interface OssOperations {
      * @param unit      时间单位
      * @return 授权访问的 URL 对象
      */
-    URL generatePresignedUrl(String objectKey, int duration, TimeUnit unit);
-
-
-    // ------------------------------------------------------------
-    // ---------------------- download 下载 -----------------------
-    // ------------------------------------------------------------
+    URL presignedUrlForAccess(String objectKey, int duration, TimeUnit unit);
 
     /**
      * 下载到指定 File 中

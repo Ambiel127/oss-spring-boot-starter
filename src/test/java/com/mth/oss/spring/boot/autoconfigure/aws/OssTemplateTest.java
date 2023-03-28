@@ -164,7 +164,7 @@ public class OssTemplateTest {
         String objectKey = ossTemplate.replaceUpload(testFile);
 
         // 生成签名URL
-        URL url = ossTemplate.generatePresignedUrl(objectKey);
+        URL url = ossTemplate.presignedUrlForAccess(objectKey);
         System.out.println(url);
 
         // 验证url生效
@@ -191,7 +191,7 @@ public class OssTemplateTest {
         String objectKey = ossTemplate.replaceUpload(testFile);
 
         // 生成签名url
-        URL url = ossTemplate.generatePresignedUrl(objectKey, duration, unit);
+        URL url = ossTemplate.presignedUrlForAccess(objectKey, duration, unit);
         System.out.println(url);
 
         // 验证url生效
