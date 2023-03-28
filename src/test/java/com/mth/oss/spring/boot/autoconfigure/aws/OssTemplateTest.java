@@ -1,5 +1,6 @@
 package com.mth.oss.spring.boot.autoconfigure.aws;
 
+import com.amazonaws.HttpMethod;
 import com.amazonaws.services.s3.model.Bucket;
 import com.amazonaws.services.s3.model.DeleteObjectsResult;
 import com.amazonaws.services.s3.model.PutObjectRequest;
@@ -144,6 +145,20 @@ public class OssTemplateTest {
     }
 
     @Test
+    void testPresignedUrlForUpload() {
+        URL url = ossTemplate.presignedUrlForUpload(testObjectKey);
+        System.out.println(url);
+        assertNotNull(url);
+    }
+
+    @Test
+    void testPresignedUrlForUpload2() {
+        URL url = ossTemplate.presignedUrlForUpload(testObjectKey, 5, TimeUnit.SECONDS);
+        System.out.println(url);
+        assertNotNull(url);
+    }
+
+    @Test
     void testGeneratePresignedUrl() throws IOException {
         // 上传
         String objectKey = ossTemplate.replaceUpload(testFile);
@@ -202,7 +217,7 @@ public class OssTemplateTest {
         String objectKey = ossTemplate.replaceUpload(testFile);
 
         // 生成签名url
-        URL url = ossTemplate.generatePresignedUrl(objectKey, duration);
+        URL url = ossTemplate.generatePresignedUrl(objectKey, duration, HttpMethod.GET);
 
         // 验证url生效
         HttpResponse urlResult = httpClient.execute(new HttpGet(url.toString()));

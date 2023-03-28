@@ -161,12 +161,30 @@ public interface OssOperations {
     String replaceUpload(File file, String objectKey);
 
     /**
+     * 使用预签名 URL 上传对象
+     *
+     * @param objectKey Object 完整路径
+     * @return 授权上传的 URL 对象
+     */
+    URL presignedUrlForUpload(String objectKey);
+
+    /**
+     * 使用预签名 URL 上传对象
+     *
+     * @param objectKey Object 完整路径
+     * @param duration  链接有效时长
+     * @param unit      时间单位
+     * @return 授权上传的 URL 对象
+     */
+    URL presignedUrlForUpload(String objectKey, int duration, TimeUnit unit);
+
+    /**
      * 生成签名 URL 授权访问
      * <p>
      * 默认过期时间1小时
      *
      * @param objectKey Object 完整路径
-     * @return 授权访问 URL 对象
+     * @return 授权访问的 URL 对象
      */
     URL generatePresignedUrl(String objectKey);
 
@@ -176,7 +194,7 @@ public interface OssOperations {
      * @param objectKey Object 完整路径
      * @param duration  链接有效时长
      * @param unit      时间单位
-     * @return 授权访问 URL 对象
+     * @return 授权访问的 URL 对象
      */
     URL generatePresignedUrl(String objectKey, int duration, TimeUnit unit);
 

@@ -1,5 +1,6 @@
 package com.mth.oss.spring.boot.autoconfigure.aws;
 
+import com.amazonaws.HttpMethod;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.*;
 import com.amazonaws.util.IOUtils;
@@ -124,13 +125,23 @@ public class OssTemplate implements OssOperations {
     }
 
     @Override
+    public URL presignedUrlForUpload(String objectKey) {
+        return generatePresignedUrl(objectKey, null, HttpMethod.PUT);
+    }
+
+    @Override
+    public URL presignedUrlForUpload(String objectKey, int duration, TimeUnit unit) {
+        return generatePresignedUrl(objectKey, unit.toSeconds(duration), HttpMethod.PUT);
+    }
+
+    @Override
     public URL generatePresignedUrl(String objectKey) {
-        return generatePresignedUrl(objectKey, null);
+        return generatePresignedUrl(objectKey, null, HttpMethod.GET);
     }
 
     @Override
     public URL generatePresignedUrl(String objectKey, int duration, TimeUnit unit) {
-        return generatePresignedUrl(objectKey, unit.toSeconds(duration));
+        return generatePresignedUrl(objectKey, unit.toSeconds(duration), HttpMethod.GET);
     }
 
     @Override
@@ -280,10 +291,10 @@ public class OssTemplate implements OssOperations {
      *
      * @param objectKey  Object 完整路径
      * @param expiration 签名 url 过期时长，单位秒
+     * @param method     签名 url 请求方法。PUT用来上传对象；GET用来访问对象
      * @return 授权访问 URL 对象
      */
-    public URL generatePresignedUrl(String objectKey, Long expiration) {
-
+    public URL generatePresignedUrl(String objectKey, Long expiration, HttpMethod method) {
         // 过期时间为空，则默认1小时
         long expiry = Objects.isNull(expiration) ? ossProperties.getExpiration() : expiration;
         // 转换为毫秒
@@ -295,7 +306,7 @@ public class OssTemplate implements OssOperations {
         // 处理路径分隔符
         objectKey = trimPathCharacter(objectKey);
 
-        return client.generatePresignedUrl(ossProperties.getBucketName(), objectKey, expirationDate);
+        return client.generatePresignedUrl(ossProperties.getBucketName(), objectKey, expirationDate, method);
 
     }
 
