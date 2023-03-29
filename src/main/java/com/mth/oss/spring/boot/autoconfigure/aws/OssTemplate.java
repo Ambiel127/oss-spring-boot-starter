@@ -135,6 +135,21 @@ public class OssTemplate implements OssOperations {
     }
 
     @Override
+    public InitiateMultipartUploadResult initMultipartUpload(String objectKey) {
+        return null;
+    }
+
+    @Override
+    public InitiateMultipartUploadResult initMultipartUpload(String objectKey, String contentType) {
+        return null;
+    }
+
+    @Override
+    public InitiateMultipartUploadResult initMultipartUpload(InitiateMultipartUploadRequest request) {
+        return null;
+    }
+
+    @Override
     public URL presignedUrlForAccess(String objectKey) {
         return generatePresignedUrl(objectKey, null, HttpMethod.GET);
     }

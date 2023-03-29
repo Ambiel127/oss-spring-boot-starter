@@ -180,6 +180,17 @@ public interface OssOperations {
 
 
     // ------------------------------------------------------------
+    // ---------------- multipart upload 分片上传 ------------------
+    // ------------------------------------------------------------
+
+    InitiateMultipartUploadResult initMultipartUpload(String objectKey);
+
+    InitiateMultipartUploadResult initMultipartUpload(String objectKey, String contentType);
+
+    InitiateMultipartUploadResult initMultipartUpload(InitiateMultipartUploadRequest request);
+
+
+    // ------------------------------------------------------------
     // ---------------------- download 下载 -----------------------
     // ------------------------------------------------------------
 
