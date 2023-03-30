@@ -125,6 +125,7 @@ public interface OssOperations {
      *                    网络流：new URL("https://www.example.com/").openStream();
      *                    字节数组：new ByteArrayInputStream("Hello OSS".getBytes())
      * @param objectKey   Object 完整路径，不能包含Bucket名称，例如 exampleDir/exampleObject.txt
+     * @param contentType 文件内容类型
      * @return 存储对象完整路径
      */
     String upload(InputStream inputStream, String objectKey, String contentType);
@@ -183,10 +184,29 @@ public interface OssOperations {
     // ---------------- multipart upload 分片上传 ------------------
     // ------------------------------------------------------------
 
+    /**
+     * 启动分片上传
+     *
+     * @param objectKey Object 完整路径
+     * @return 结果对象，包含唯一ID（uploadId）
+     */
     InitiateMultipartUploadResult initMultipartUpload(String objectKey);
 
+    /**
+     * 启动分片上传
+     *
+     * @param objectKey   Object 完整路径
+     * @param contentType 文件内容类型
+     * @return 结果对象，包含唯一ID（uploadId）
+     */
     InitiateMultipartUploadResult initMultipartUpload(String objectKey, String contentType);
 
+    /**
+     * 启动分片上传
+     *
+     * @param request 参数对象
+     * @return 结果对象，包含唯一ID（uploadId）
+     */
     InitiateMultipartUploadResult initMultipartUpload(InitiateMultipartUploadRequest request);
 
 
