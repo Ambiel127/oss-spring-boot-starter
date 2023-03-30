@@ -136,17 +136,22 @@ public class OssTemplate implements OssOperations {
 
     @Override
     public InitiateMultipartUploadResult initMultipartUpload(String objectKey) {
-        return null;
+        return initMultipartUpload(objectKey, MediaType.APPLICATION_OCTET_STREAM_VALUE);
     }
 
     @Override
     public InitiateMultipartUploadResult initMultipartUpload(String objectKey, String contentType) {
-        return null;
+        ObjectMetadata metadata = new ObjectMetadata();
+        metadata.setContentType(contentType);
+
+        InitiateMultipartUploadRequest req = new InitiateMultipartUploadRequest(
+                ossProperties.getBucketName(), objectKey, metadata);
+        return initMultipartUpload(req);
     }
 
     @Override
     public InitiateMultipartUploadResult initMultipartUpload(InitiateMultipartUploadRequest request) {
-        return null;
+        return client.initiateMultipartUpload(request);
     }
 
     @Override
