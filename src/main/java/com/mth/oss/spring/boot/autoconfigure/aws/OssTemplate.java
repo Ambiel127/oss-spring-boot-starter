@@ -15,9 +15,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -126,12 +124,12 @@ public class OssTemplate implements OssOperations {
 
     @Override
     public URL presignedUrlForUpload(String objectKey) {
-        return generatePresignedUrl(objectKey, null, HttpMethod.PUT);
+        return generatePresignedUrl(objectKey, null, HttpMethod.PUT, null);
     }
 
     @Override
     public URL presignedUrlForUpload(String objectKey, int duration, TimeUnit unit) {
-        return generatePresignedUrl(objectKey, unit.toSeconds(duration), HttpMethod.PUT);
+        return generatePresignedUrl(objectKey, unit.toSeconds(duration), HttpMethod.PUT, null);
     }
 
     @Override
@@ -155,13 +153,31 @@ public class OssTemplate implements OssOperations {
     }
 
     @Override
+    public URL presignedUrlForMultipartUpload(String uploadId, int partNumber, String objectKey) {
+        Map<String, String> params = new HashMap<>();
+        params.put("uploadId", uploadId);
+        params.put("partNumber", String.valueOf(partNumber));
+
+        return generatePresignedUrl(objectKey, null, HttpMethod.PUT, params);
+    }
+
+    @Override
+    public URL presignedUrlForMultipartUpload(String uploadId, int partNumber, String objectKey, int duration, TimeUnit unit) {
+        Map<String, String> params = new HashMap<>();
+        params.put("uploadId", uploadId);
+        params.put("partNumber", String.valueOf(partNumber));
+
+        return generatePresignedUrl(objectKey, unit.toSeconds(duration), HttpMethod.PUT, params);
+    }
+
+    @Override
     public URL presignedUrlForAccess(String objectKey) {
-        return generatePresignedUrl(objectKey, null, HttpMethod.GET);
+        return generatePresignedUrl(objectKey, null, HttpMethod.GET, null);
     }
 
     @Override
     public URL presignedUrlForAccess(String objectKey, int duration, TimeUnit unit) {
-        return generatePresignedUrl(objectKey, unit.toSeconds(duration), HttpMethod.GET);
+        return generatePresignedUrl(objectKey, unit.toSeconds(duration), HttpMethod.GET, null);
     }
 
     @Override
@@ -312,9 +328,10 @@ public class OssTemplate implements OssOperations {
      * @param objectKey  Object 完整路径
      * @param expiration 签名 url 过期时长，单位秒
      * @param method     签名 url 请求方法。PUT用来上传对象；GET用来访问对象
+     * @param params     额外请求参数
      * @return 授权访问 URL 对象
      */
-    public URL generatePresignedUrl(String objectKey, Long expiration, HttpMethod method) {
+    public URL generatePresignedUrl(String objectKey, Long expiration, HttpMethod method, Map<String, String> params) {
         // 过期时间为空，则默认1小时
         long expiry = Objects.isNull(expiration) ? ossProperties.getExpiration() : expiration;
         // 转换为毫秒
@@ -326,7 +343,16 @@ public class OssTemplate implements OssOperations {
         // 处理路径分隔符
         objectKey = trimPathCharacter(objectKey);
 
-        return client.generatePresignedUrl(ossProperties.getBucketName(), objectKey, expirationDate, method);
+        // 组装请求对象
+        GeneratePresignedUrlRequest request = new GeneratePresignedUrlRequest(ossProperties.getBucketName(), objectKey)
+                .withMethod(method)
+                .withExpiration(expirationDate);
+
+        if (Objects.nonNull(params)) {
+            params.forEach(request::addRequestParameter);
+        }
+
+        return client.generatePresignedUrl(request);
 
     }
 

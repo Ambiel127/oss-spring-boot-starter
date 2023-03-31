@@ -162,7 +162,7 @@ public interface OssOperations {
     String replaceUpload(File file, String objectKey);
 
     /**
-     * 使用预签名 URL 上传对象
+     * 生成上传对象预签名 URL
      *
      * @param objectKey Object 完整路径
      * @return 授权上传的 URL 对象
@@ -170,7 +170,7 @@ public interface OssOperations {
     URL presignedUrlForUpload(String objectKey);
 
     /**
-     * 使用预签名 URL 上传对象
+     * 生成上传对象预签名 URL
      *
      * @param objectKey Object 完整路径
      * @param duration  链接有效时长
@@ -205,9 +205,31 @@ public interface OssOperations {
      * 启动分片上传
      *
      * @param request 参数对象
-     * @return 结果对象，包含唯一ID（uploadId）
+     * @return 结果对象，包含分片上传唯一ID（uploadId）
      */
     InitiateMultipartUploadResult initMultipartUpload(InitiateMultipartUploadRequest request);
+
+    /**
+     * 生成上传对象预签名 URL
+     *
+     * @param uploadId   分片上传唯一ID
+     * @param partNumber 分片序号
+     * @param objectKey  Object 完整路径
+     * @return 授权上传的 URL 对象
+     */
+    URL presignedUrlForMultipartUpload(String uploadId, int partNumber, String objectKey);
+
+    /**
+     * 生成上传对象预签名 URL
+     *
+     * @param uploadId 分片上传唯一ID
+     * @param partNumber 分片序号
+     * @param objectKey Object 完整路径
+     * @param duration  链接有效时长
+     * @param unit      时间单位
+     * @return 授权上传的 URL 对象
+     */
+    URL presignedUrlForMultipartUpload(String uploadId, int partNumber, String objectKey, int duration, TimeUnit unit);
 
 
     // ------------------------------------------------------------
@@ -215,7 +237,7 @@ public interface OssOperations {
     // ------------------------------------------------------------
 
     /**
-     * 生成签名 URL 授权访问
+     * 生成授权访问预签名 URL
      * <p>
      * 默认过期时间1小时
      *
@@ -225,7 +247,7 @@ public interface OssOperations {
     URL presignedUrlForAccess(String objectKey);
 
     /**
-     * 生成签名 URL 授权访问
+     * 生成授权访问预签名 URL
      *
      * @param objectKey Object 完整路径
      * @param duration  链接有效时长
