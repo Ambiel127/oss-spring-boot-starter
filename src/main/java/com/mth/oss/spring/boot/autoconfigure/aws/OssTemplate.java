@@ -171,6 +171,46 @@ public class OssTemplate implements OssOperations {
     }
 
     @Override
+    public UploadPartResult uploadPart(UploadPartRequest request) {
+        return client.uploadPart(request);
+    }
+
+    @Override
+    public PartListing listParts(String uploadId, String objectKey) {
+        ListPartsRequest request = new ListPartsRequest(ossProperties.getBucketName(), objectKey, uploadId);
+        return listParts(request);
+    }
+
+    @Override
+    public PartListing listParts(ListPartsRequest request) {
+        return client.listParts(request);
+    }
+
+    @Override
+    public MultipartUploadListing listMultipartUploads(String prefix) {
+        ListMultipartUploadsRequest request = new ListMultipartUploadsRequest(ossProperties.getBucketName())
+                .withPrefix(prefix);
+        return listMultipartUploads(request);
+    }
+
+    @Override
+    public MultipartUploadListing listMultipartUploads(ListMultipartUploadsRequest request) {
+        return client.listMultipartUploads(request);
+    }
+
+    @Override
+    public CompleteMultipartUploadResult completeMultipartUpload(String uploadId, String objectKey) {
+        CompleteMultipartUploadRequest compRequest = new CompleteMultipartUploadRequest(
+                ossProperties.getBucketName(), objectKey, uploadId, new ArrayList<>());
+        return completeMultipartUpload(compRequest);
+    }
+
+    @Override
+    public CompleteMultipartUploadResult completeMultipartUpload(CompleteMultipartUploadRequest request) {
+        return client.completeMultipartUpload(request);
+    }
+
+    @Override
     public URL presignedUrlForAccess(String objectKey) {
         return generatePresignedUrl(objectKey, null, HttpMethod.GET, null);
     }

@@ -231,6 +231,64 @@ public interface OssOperations {
      */
     URL presignedUrlForMultipartUpload(String uploadId, int partNumber, String objectKey, int duration, TimeUnit unit);
 
+    /**
+     * 上传分片上传中的部分
+     *
+     * @param request 分片上传请求对象
+     * @return 结果对象，包含实体标签 eTag
+     */
+    UploadPartResult uploadPart(UploadPartRequest request);
+
+    /**
+     * 列出已上传的分片
+     *
+     * @param uploadId 分片上传唯一ID
+     * @param objectKey Object 完整路径
+     * @return 已上传结果对象
+     */
+    PartListing listParts(String uploadId, String objectKey);
+
+    /**
+     * 列出已上传的分片
+     *
+     * @param request 请求对象
+     * @return 已上传结果对象
+     */
+    PartListing listParts(ListPartsRequest request);
+
+    /**
+     * 列出正在进行的上传分段
+     *
+     * @param prefix 以指定前缀开头的键
+     * @return 结果对象
+     */
+    MultipartUploadListing listMultipartUploads(String prefix);
+
+    /**
+     * 列出正在进行的上传分段
+     *
+     * @param request 请求对象
+     * @return 结果对象
+     */
+    MultipartUploadListing listMultipartUploads(ListMultipartUploadsRequest request);
+
+    /**
+     * 合并分片
+     *
+     * @param uploadId 分片上传唯一ID
+     * @param objectKey Object 完整路径
+     * @return 合并结果对象
+     */
+    CompleteMultipartUploadResult completeMultipartUpload(String uploadId, String objectKey);
+
+    /**
+     * 合并分片
+     *
+     * @param request 合并请求对象
+     * @return 合并结果对象
+     */
+    CompleteMultipartUploadResult completeMultipartUpload(CompleteMultipartUploadRequest request);
+
 
     // ------------------------------------------------------------
     // ---------------------- download 下载 -----------------------
