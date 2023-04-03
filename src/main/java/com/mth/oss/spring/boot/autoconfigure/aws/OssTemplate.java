@@ -211,6 +211,18 @@ public class OssTemplate implements OssOperations {
     }
 
     @Override
+    public void abortMultipartUpload(String uploadId, String objectKey) {
+        AbortMultipartUploadRequest request = new AbortMultipartUploadRequest(
+                ossProperties.getBucketName(), objectKey, uploadId);
+        abortMultipartUpload(request);
+    }
+
+    @Override
+    public void abortMultipartUpload(AbortMultipartUploadRequest request) {
+        client.abortMultipartUpload(request);
+    }
+
+    @Override
     public URL presignedUrlForAccess(String objectKey) {
         return generatePresignedUrl(objectKey, null, HttpMethod.GET, null);
     }

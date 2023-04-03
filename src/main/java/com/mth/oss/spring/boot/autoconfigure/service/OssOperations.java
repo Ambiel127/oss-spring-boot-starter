@@ -289,6 +289,21 @@ public interface OssOperations {
      */
     CompleteMultipartUploadResult completeMultipartUpload(CompleteMultipartUploadRequest request);
 
+    /**
+     * 中止分段上传
+     *
+     * @param uploadId 分片上传唯一ID
+     * @param objectKey Object 完整路径
+     */
+    void abortMultipartUpload(String uploadId, String objectKey);
+
+    /**
+     * 中止分段上传
+     *
+     * @param request 终止请求对象
+     */
+    void abortMultipartUpload(AbortMultipartUploadRequest request);
+
 
     // ------------------------------------------------------------
     // ---------------------- download 下载 -----------------------
