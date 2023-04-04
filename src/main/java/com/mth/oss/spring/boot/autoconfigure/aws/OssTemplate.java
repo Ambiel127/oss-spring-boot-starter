@@ -187,9 +187,8 @@ public class OssTemplate implements OssOperations {
     }
 
     @Override
-    public MultipartUploadListing listMultipartUploads(String prefix) {
-        ListMultipartUploadsRequest request = new ListMultipartUploadsRequest(ossProperties.getBucketName())
-                .withPrefix(prefix);
+    public MultipartUploadListing listMultipartUploads() {
+        ListMultipartUploadsRequest request = new ListMultipartUploadsRequest(ossProperties.getBucketName());
         return listMultipartUploads(request);
     }
 
@@ -199,9 +198,9 @@ public class OssTemplate implements OssOperations {
     }
 
     @Override
-    public CompleteMultipartUploadResult completeMultipartUpload(String uploadId, String objectKey) {
+    public CompleteMultipartUploadResult completeMultipartUpload(String uploadId, String objectKey, List<PartETag> partETags) {
         CompleteMultipartUploadRequest compRequest = new CompleteMultipartUploadRequest(
-                ossProperties.getBucketName(), objectKey, uploadId, new ArrayList<>());
+                ossProperties.getBucketName(), objectKey, uploadId, partETags);
         return completeMultipartUpload(compRequest);
     }
 

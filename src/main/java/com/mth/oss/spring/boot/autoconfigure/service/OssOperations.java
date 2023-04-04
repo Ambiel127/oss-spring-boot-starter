@@ -259,10 +259,9 @@ public interface OssOperations {
     /**
      * 列出正在进行的上传分段
      *
-     * @param prefix 以指定前缀开头的键
      * @return 结果对象
      */
-    MultipartUploadListing listMultipartUploads(String prefix);
+    MultipartUploadListing listMultipartUploads();
 
     /**
      * 列出正在进行的上传分段
@@ -277,9 +276,10 @@ public interface OssOperations {
      *
      * @param uploadId 分片上传唯一ID
      * @param objectKey Object 完整路径
+     * @param partETags 用于标识要完成的多部分上传的各个部分的部件号和标签列表
      * @return 合并结果对象
      */
-    CompleteMultipartUploadResult completeMultipartUpload(String uploadId, String objectKey);
+    CompleteMultipartUploadResult completeMultipartUpload(String uploadId, String objectKey, List<PartETag> partETags);
 
     /**
      * 合并分片
