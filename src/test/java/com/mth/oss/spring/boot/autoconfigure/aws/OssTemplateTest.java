@@ -1,10 +1,8 @@
 package com.mth.oss.spring.boot.autoconfigure.aws;
 
 import com.amazonaws.HttpMethod;
-import com.amazonaws.services.s3.model.Bucket;
-import com.amazonaws.services.s3.model.DeleteObjectsResult;
-import com.amazonaws.services.s3.model.PutObjectRequest;
-import com.amazonaws.services.s3.model.S3ObjectSummary;
+import com.amazonaws.services.s3.model.*;
+import lombok.SneakyThrows;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
@@ -15,15 +13,18 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 
 import javax.annotation.Resource;
 import java.io.*;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -40,7 +41,7 @@ public class OssTemplateTest {
 
     private static final File testFile = new File("C:\\Users\\watone\\Desktop\\test.txt");
     private static final File testDownLoadFile = new File("C:\\Users\\watone\\Desktop\\test-download.txt");
-    private static final String testObjectKey = "ossSpringBootStarterTestDir/test.pdf";
+    private static final String testObjectKey = "ossSpringBootStarterTestDir/test.txt";
     private static final HttpClient httpClient = HttpClients.createDefault();
 
     @Value("${oss.bucket-name}")
@@ -217,7 +218,7 @@ public class OssTemplateTest {
         String objectKey = ossTemplate.replaceUpload(testFile);
 
         // 生成签名url
-        URL url = ossTemplate.generatePresignedUrl(objectKey, duration, HttpMethod.GET);
+        URL url = ossTemplate.generatePresignedUrl(objectKey, duration, HttpMethod.GET, null);
 
         // 验证url生效
         HttpResponse urlResult = httpClient.execute(new HttpGet(url.toString()));
@@ -230,6 +231,147 @@ public class OssTemplateTest {
 
         // 验证文件并清理
         assertFileAndClean(objectKey);
+    }
+
+
+    // ------------------------------------------------------------
+    // ---------------- multipart upload 分片上传 ------------------
+    // ------------------------------------------------------------
+
+    @Test
+    void testInitAndAbortMultipartUpload() {
+        // initial multipart upload
+        InitiateMultipartUploadResult initResponse = ossTemplate.initMultipartUpload(testObjectKey);
+        assertNotNull(initResponse);
+        assertNotNull(initResponse.getUploadId());
+        System.out.println("uploadId: " + initResponse.getUploadId());
+
+        // abort multipart upload
+        ossTemplate.abortMultipartUpload(initResponse.getUploadId(), testObjectKey);
+        System.out.println("abort multipart upload");
+
+        // list multipart upload
+        MultipartUploadListing uploadListing = ossTemplate.listMultipartUploads();
+        System.out.println(uploadListing.getMultipartUploads().size());
+
+        for (MultipartUpload item : uploadListing.getMultipartUploads()) {
+            System.out.println("uploadId: " + item.getUploadId());
+            System.out.println("key: " + item.getKey());
+            System.out.println("init date: " + item.getInitiated());
+        }
+    }
+
+    @Test
+    void testMultipartUpload() {
+        long contentLength = testFile.length();
+        // 5MB
+        long partSize = 5 * 1024 * 1024;
+
+        List<PartETag> partETags = new ArrayList<>();
+
+        // initial multipart upload
+        InitiateMultipartUploadResult initResponse = ossTemplate.initMultipartUpload(testObjectKey, MediaType.TEXT_PLAIN_VALUE);
+        assertNotNull(initResponse);
+        assertNotNull(initResponse.getUploadId());
+        System.out.println("uploadId: " + initResponse.getUploadId());
+
+        long filePosition = 0;
+
+        // upload file parts
+        for (int i = 1; filePosition < contentLength; i++) {
+            partSize = Math.min(partSize, (contentLength - filePosition));
+
+            UploadPartRequest request = new UploadPartRequest()
+                    .withBucketName(bucketName)
+                    .withKey(testObjectKey)
+                    .withUploadId(initResponse.getUploadId())
+                    .withPartNumber(i)
+                    .withFileOffset(filePosition)
+                    .withFile(testFile)
+                    .withPartSize(partSize);
+            UploadPartResult uploadResponse = ossTemplate.uploadPart(request);
+            partETags.add(uploadResponse.getPartETag());
+
+            filePosition += partSize;
+            System.out.println("分片" + i + "上传完毕");
+        }
+
+        // list part
+        PartListing partListing = ossTemplate.listParts(initResponse.getUploadId(), testObjectKey);
+        if (partListing.getParts().size() == partETags.size()) {
+            System.out.println("分片上传完毕，开始合并");
+        }
+
+        // complete multipart upload
+        CompleteMultipartUploadRequest request = new CompleteMultipartUploadRequest()
+                .withBucketName(bucketName)
+                .withKey(testObjectKey)
+                .withUploadId(initResponse.getUploadId())
+                .withPartETags(partETags);
+        CompleteMultipartUploadResult completeResult = ossTemplate.completeMultipartUpload(request);
+        System.out.println("complete result: " + completeResult);
+
+        // 清理文件
+        assertFileAndClean(testObjectKey);
+    }
+
+    @SneakyThrows
+    @Test
+    void testMultipartUpload2() {
+        FileInputStream fis = new FileInputStream(testFile);
+        long contentLength = testFile.length();
+        long partSize = 5 * 1024 * 1024;
+        byte[] bytes = new byte[(int) partSize];
+
+        int partNums = 0;
+
+        // initial multipart upload
+        InitiateMultipartUploadResult initResponse = ossTemplate.initMultipartUpload(testObjectKey);
+        assertNotNull(initResponse);
+        assertNotNull(initResponse.getUploadId());
+        System.out.println("uploadId: " + initResponse.getUploadId());
+
+        long filePosition = 0;
+
+        // upload file parts
+        for (int i = 1; filePosition < contentLength; i++) {
+            partSize = Math.min(partSize, (contentLength - filePosition));
+
+            URL url = ossTemplate.presignedUrlForMultipartUpload(initResponse.getUploadId(), i, testObjectKey);
+            System.out.println(url);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setDoOutput(true);
+            connection.setRequestProperty("Content-Type", MediaType.APPLICATION_PDF_VALUE);
+            connection.setRequestMethod("PUT");
+            DataOutputStream out = new DataOutputStream(connection.getOutputStream());
+            fis.read(bytes, 0, (int) partSize);
+            out.write(bytes, 0, (int) partSize);
+            out.close();
+
+            connection.getResponseCode();
+            System.out.println("HTTP response code is " + connection.getResponseCode());
+
+            filePosition += partSize;
+            partNums += 1;
+            System.out.println("分片" + i + "上传完毕");
+        }
+
+        // list part
+        PartListing partListing = ossTemplate.listParts(initResponse.getUploadId(), testObjectKey);
+        if (partListing.getParts().size() == partNums) {
+            System.out.println("分片上传完毕，开始合并");
+        }
+
+        // complete multipart upload
+        List<PartETag> partETags = partListing.getParts().stream()
+                .map(item -> new PartETag(item.getPartNumber(), item.getETag()))
+                .collect(Collectors.toList());
+        CompleteMultipartUploadResult completeResult = ossTemplate.completeMultipartUpload(
+                initResponse.getUploadId(), testObjectKey, partETags);
+        System.out.println("complete result: " + completeResult);
+
+        // 清理文件
+        assertFileAndClean(testObjectKey);
     }
 
 
