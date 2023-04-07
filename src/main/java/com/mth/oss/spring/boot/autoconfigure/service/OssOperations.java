@@ -179,6 +179,16 @@ public interface OssOperations {
      */
     URL presignedUrlForUpload(String objectKey, int duration, TimeUnit unit);
 
+    /**
+     * 生成预签名 URL，可用于上传和访问
+     *
+     * @param request 请求对象
+     * @return 授权 URL 对象
+     * @see OssOperations#presignedUrlForUpload 生成上传对象预签名 URL
+     * @see OssOperations#presignedUrlForAccess 生成授权访问预签名 URL
+     */
+    URL generatePresignedUrl(GeneratePresignedUrlRequest request);
+
 
     // ------------------------------------------------------------
     // ---------------- multipart upload 分片上传 ------------------

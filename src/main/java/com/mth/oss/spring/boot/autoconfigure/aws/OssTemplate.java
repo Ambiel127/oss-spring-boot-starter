@@ -133,6 +133,11 @@ public class OssTemplate implements OssOperations {
     }
 
     @Override
+    public URL generatePresignedUrl(GeneratePresignedUrlRequest request) {
+        return client.generatePresignedUrl(request);
+    }
+
+    @Override
     public InitiateMultipartUploadResult initMultipartUpload(String objectKey) {
         return initMultipartUpload(objectKey, MediaType.APPLICATION_OCTET_STREAM_VALUE);
     }
@@ -382,7 +387,7 @@ public class OssTemplate implements OssOperations {
      * @param params     额外请求参数
      * @return 授权访问 URL 对象
      */
-    public URL generatePresignedUrl(String objectKey, Long expiration, HttpMethod method, Map<String, String> params) {
+    private URL generatePresignedUrl(String objectKey, Long expiration, HttpMethod method, Map<String, String> params) {
         // 过期时间为空，则默认1小时
         long expiry = Objects.isNull(expiration) ? ossProperties.getExpiration() : expiration;
         // 转换为毫秒
@@ -403,7 +408,7 @@ public class OssTemplate implements OssOperations {
             params.forEach(request::addRequestParameter);
         }
 
-        return client.generatePresignedUrl(request);
+        return generatePresignedUrl(request);
 
     }
 
