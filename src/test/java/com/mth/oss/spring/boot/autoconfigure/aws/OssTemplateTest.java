@@ -1,6 +1,5 @@
 package com.mth.oss.spring.boot.autoconfigure.aws;
 
-import com.amazonaws.HttpMethod;
 import com.amazonaws.services.s3.model.*;
 import lombok.SneakyThrows;
 import org.apache.http.HttpResponse;
@@ -211,23 +210,15 @@ public class OssTemplateTest {
     @Test
     @Disabled
     void testGeneratePresignedUrl2() throws IOException, InterruptedException {
-        // 持续时间 5s
-        long duration = 5L;
-
         // 上传
         String objectKey = ossTemplate.replaceUpload(testFile);
 
         // 生成签名url
-        URL url = ossTemplate.generatePresignedUrl(objectKey, duration, HttpMethod.GET, null);
+        URL url = ossTemplate.presignedUrlForAccess(objectKey);
 
         // 验证url生效
         HttpResponse urlResult = httpClient.execute(new HttpGet(url.toString()));
         assertEquals(200, urlResult.getStatusLine().getStatusCode());
-
-        // 验证url无效，签名过期 AccessDenied
-        TimeUnit.SECONDS.sleep(duration + 1);
-        HttpResponse urlExpireResult = httpClient.execute(new HttpGet(url.toString()));
-        assertEquals(403, urlExpireResult.getStatusLine().getStatusCode());
 
         // 验证文件并清理
         assertFileAndClean(objectKey);
