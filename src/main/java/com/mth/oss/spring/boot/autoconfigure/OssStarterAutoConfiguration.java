@@ -24,8 +24,8 @@ public class OssStarterAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
     @ConditionalOnProperty(prefix = "oss" , name = "enable" , havingValue = "true")
-    public OssTemplate awsStorage(OssProperties ossProperties) {
-        return new OssTemplate(ossProperties);
+    public OssTemplate ossTemplate() {
+        return new OssTemplate();
     }
 
 }
