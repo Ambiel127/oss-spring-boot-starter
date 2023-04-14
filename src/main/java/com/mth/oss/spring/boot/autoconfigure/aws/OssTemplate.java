@@ -5,8 +5,9 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.*;
 import com.amazonaws.util.IOUtils;
 import com.mth.oss.spring.boot.autoconfigure.OssProperties;
+import com.mth.oss.spring.boot.autoconfigure.handler.DefaultOssHandler;
+import com.mth.oss.spring.boot.autoconfigure.handler.OssHandler;
 import com.mth.oss.spring.boot.autoconfigure.service.OssOperations;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 
 import javax.annotation.Resource;
@@ -24,13 +25,16 @@ import java.util.concurrent.TimeUnit;
  * @author <a href="mailto:ambiel127@163.com">Matianhao</a>
  * @since 1.3
  */
-@RequiredArgsConstructor
 public class OssTemplate implements OssOperations {
-
-    private final OssProperties ossProperties;
 
     @Resource
     private AmazonS3 client;
+
+    @Resource
+    private OssProperties ossProperties;
+
+    @Resource
+    private OssHandler ossHandler;
 
 
     @Override
@@ -114,11 +118,12 @@ public class OssTemplate implements OssOperations {
 
     @Override
     public String upload(PutObjectRequest putObjectRequest) {
-        // todo [matianhao] 上传进度监听
-        putObjectRequest.setGeneralProgressListener(
-                progressEvent ->
-                        System.out.println("Transferred bytes: " + progressEvent.getBytesTransferred()));
-        client.putObject(putObjectRequest);
+        ossHandler.beforeUpload(putObjectRequest);
+
+        // 上传
+        PutObjectResult putObjectResult = client.putObject(putObjectRequest);
+
+        ossHandler.afterUpload(putObjectRequest, putObjectResult);
         return putObjectRequest.getKey();
     }
 
@@ -370,15 +375,6 @@ public class OssTemplate implements OssOperations {
     }
 
     /**
-     * 获取客户端对象实例
-     *
-     * @return 客户端对象
-     */
-    public AmazonS3 getClientInstance() {
-        return client;
-    }
-
-    /**
      * 生成签名 URL 授权访问
      *
      * @param objectKey  Object 完整路径
@@ -426,6 +422,24 @@ public class OssTemplate implements OssOperations {
 
         // 查询拷贝后对象是否存在
         return objectExist(request.getDestinationBucketName(), request.getDestinationKey());
+    }
+
+    /**
+     * 获取客户端对象实例
+     *
+     * @return 客户端对象
+     */
+    public AmazonS3 getClientInstance() {
+        return client;
+    }
+
+    /**
+     * 设置自定义扩展点实现
+     *
+     * @param ossHandler 扩展点实现类
+     */
+    public void setOssHandler(OssHandler ossHandler) {
+        this.ossHandler = Objects.nonNull(ossHandler) ? ossHandler : new DefaultOssHandler();
     }
 
 }
