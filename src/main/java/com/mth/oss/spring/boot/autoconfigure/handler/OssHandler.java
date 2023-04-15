@@ -3,6 +3,8 @@ package com.mth.oss.spring.boot.autoconfigure.handler;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.PutObjectResult;
 
+import java.util.List;
+
 /**
  * 提供操作的扩展点
  *
@@ -39,5 +41,21 @@ public interface OssHandler {
      * @param bucketName 桶名称
      */
     void afterBucketDelete(String bucketName);
+
+    /**
+     * 文件删除之前
+     *
+     * @param objects object路径集合
+     */
+    void beforeObjectDelete(List<String> objects);
+
+    /**
+     * 文件删除之后
+     *
+     * @param objects object路径集合
+     */
+    void afterObjectDelete(List<String> objects);
+
+
 
 }

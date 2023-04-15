@@ -347,17 +347,25 @@ public class OssTemplate implements OssOperations {
 
     @Override
     public boolean deleteObject(String objectKey) {
+        ossHandler.beforeObjectDelete(Collections.singletonList(objectKey));
+
         client.deleteObject(ossProperties.getBucketName(), objectKey);
+
+        ossHandler.afterObjectDelete(Collections.singletonList(objectKey));
         return !objectExist(objectKey);
     }
 
     @Override
     public List<DeleteObjectsResult.DeletedObject> deleteObjects(List<String> objectKeys) {
+        ossHandler.beforeObjectDelete(objectKeys);
+
         DeleteObjectsResult deleteResult = client.deleteObjects(
                 new DeleteObjectsRequest(ossProperties.getBucketName())
                         .withQuiet(true)
                         .withKeys(objectKeys.toArray(new String[0]))
         );
+
+        ossHandler.afterObjectDelete(objectKeys);
         // 删除失败的文件列表
         return deleteResult.getDeletedObjects();
     }
