@@ -26,4 +26,18 @@ public interface OssHandler {
      */
     void afterUpload(PutObjectRequest request, PutObjectResult result);
 
+    /**
+     * 存储空间删除之前
+     *
+     * @param bucketName 桶名称
+     */
+    void beforeBucketDelete(String bucketName);
+
+    /**
+     * 存储空间删除之后
+     *
+     * @param bucketName 桶名称
+     */
+    void afterBucketDelete(String bucketName);
+
 }

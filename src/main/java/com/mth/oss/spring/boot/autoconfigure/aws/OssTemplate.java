@@ -64,7 +64,11 @@ public class OssTemplate implements OssOperations {
 
     @Override
     public boolean deleteBucket(String bucketName) {
+        ossHandler.beforeBucketDelete(bucketName);
+
         client.deleteBucket(bucketName);
+
+        ossHandler.afterBucketDelete(bucketName);
         return !bucketExist(bucketName);
     }
 

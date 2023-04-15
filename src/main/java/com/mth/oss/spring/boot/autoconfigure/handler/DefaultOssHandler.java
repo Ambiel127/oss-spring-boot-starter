@@ -27,4 +27,14 @@ public class DefaultOssHandler implements OssHandler {
     public void afterUpload(PutObjectRequest request, PutObjectResult result) {
         log.info("after file upload: {}", request.getKey());
     }
+
+    @Override
+    public void beforeBucketDelete(String bucketName) {
+        log.info("before bucket delete: {}", bucketName);
+    }
+
+    @Override
+    public void afterBucketDelete(String bucketName) {
+        log.info("after bucket delete: {}", bucketName);
+    }
 }
