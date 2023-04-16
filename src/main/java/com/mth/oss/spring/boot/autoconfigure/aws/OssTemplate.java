@@ -143,7 +143,12 @@ public class OssTemplate implements OssOperations {
 
     @Override
     public URL generatePresignedUrl(GeneratePresignedUrlRequest request) {
-        return client.generatePresignedUrl(request);
+        ossHandler.beforeGeneratePresignedUrl(request);
+
+        URL url = client.generatePresignedUrl(request);
+
+        ossHandler.afterGeneratePresignedUrl(request, url);
+        return url;
     }
 
     @Override

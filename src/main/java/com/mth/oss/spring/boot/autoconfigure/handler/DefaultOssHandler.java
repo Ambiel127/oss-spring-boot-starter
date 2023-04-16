@@ -1,10 +1,12 @@
 package com.mth.oss.spring.boot.autoconfigure.handler;
 
+import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.PutObjectResult;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+import java.net.URL;
 import java.util.List;
 
 /**
@@ -50,4 +52,13 @@ public class DefaultOssHandler implements OssHandler {
         log.info("after file delete: {}", objects);
     }
 
+    @Override
+    public void beforeGeneratePresignedUrl(GeneratePresignedUrlRequest request) {
+        log.info("before generatePresignedUrl: {}", request.getKey());
+    }
+
+    @Override
+    public void afterGeneratePresignedUrl(GeneratePresignedUrlRequest request, URL url) {
+        log.info("after generatePresignedUrl: {}", request.getKey());
+    }
 }
