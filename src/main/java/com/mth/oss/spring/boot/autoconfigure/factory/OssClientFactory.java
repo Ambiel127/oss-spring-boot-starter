@@ -1,4 +1,4 @@
-package com.mth.oss.spring.boot.autoconfigure;
+package com.mth.oss.spring.boot.autoconfigure.factory;
 
 import com.amazonaws.ClientConfiguration;
 import com.amazonaws.auth.AWSCredentials;
@@ -7,6 +7,7 @@ import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
+import com.mth.oss.spring.boot.autoconfigure.OssProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
