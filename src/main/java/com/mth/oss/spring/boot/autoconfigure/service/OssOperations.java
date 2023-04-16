@@ -501,24 +501,6 @@ public interface OssOperations {
     // ------------------------------------------------------------
 
     /**
-     * 获取时间戳字符串 yyyyMMddHHmmssSSS
-     *
-     * @return 时间戳字符串
-     */
-    default String getDateTimeStr() {
-        return LocalDateTime.now().format(DATE_TIME_FORMATTER);
-    }
-
-    /**
-     * 获取默认路径前缀 yyyyMMdd
-     *
-     * @return 日期字符串
-     */
-    default String getDefaultPathPrefix() {
-        return LocalDate.now().format(DATE_FORMATTER);
-    }
-
-    /**
      * 获取默认 object key 完整路径
      * <p>
      * 默认前缀为 yyyyMMdd 日期文件夹；
@@ -535,10 +517,10 @@ public interface OssOperations {
         String name = fileName.substring(0, fileName.lastIndexOf("."));
 
         // 路径前缀
-        String pathPrefix = getDefaultPathPrefix();
+        String pathPrefix = LocalDate.now().format(DATE_FORMATTER);
 
         // 时间戳字符串
-        String dateTimeStr = getDateTimeStr();
+        String dateTimeStr = LocalDateTime.now().format(DATE_TIME_FORMATTER);
 
         // 重新命名后的 Object 完整路径
         return pathPrefix + "/" + name + "_" + dateTimeStr + extra;
