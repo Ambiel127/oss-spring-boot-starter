@@ -1,8 +1,6 @@
 package com.mth.oss.spring.boot.autoconfigure.handler;
 
-import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
-import com.amazonaws.services.s3.model.PutObjectRequest;
-import com.amazonaws.services.s3.model.PutObjectResult;
+import com.amazonaws.services.s3.model.*;
 
 import java.net.URL;
 import java.util.List;
@@ -29,6 +27,21 @@ public interface OssHandler {
      * @param result  上传响应对象
      */
     void afterUpload(PutObjectRequest request, PutObjectResult result);
+
+    /**
+     * 下载之前
+     *
+     * @param request 下载请求对象
+     */
+    void beforeDownload(GetObjectRequest request);
+
+    /**
+     * 下载之后
+     *
+     * @param request  下载请求对象
+     * @param metadata 文件元数据
+     */
+    void afterDownload(GetObjectRequest request, ObjectMetadata metadata);
 
     /**
      * 存储空间删除之前
@@ -69,7 +82,7 @@ public interface OssHandler {
      * 生成预签名 URL 之后
      *
      * @param request 请求对象
-     * @param url 授权 URL 对象
+     * @param url     授权 URL 对象
      */
     void afterGeneratePresignedUrl(GeneratePresignedUrlRequest request, URL url);
 

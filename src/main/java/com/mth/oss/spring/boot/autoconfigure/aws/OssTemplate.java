@@ -260,17 +260,17 @@ public class OssTemplate implements OssOperations {
     public boolean download(String objectKey, File file) {
         GetObjectRequest getObjectRequest = new GetObjectRequest(ossProperties.getBucketName(), objectKey);
 
-        // todo [matianhao] 下载进度监听
-        getObjectRequest.setGeneralProgressListener(progressEvent ->
-                                                            System.out.println("Download bytes: " + progressEvent.getBytesTransferred()));
-        client.getObject(getObjectRequest, file);
+        ossHandler.beforeDownload(getObjectRequest);
+
+        ObjectMetadata metadata = client.getObject(getObjectRequest, file);
+
+        ossHandler.afterDownload(getObjectRequest, metadata);
         return file.exists();
     }
 
     @Override
     public byte[] download(String objectKey) throws IOException {
-        S3Object object = client.getObject(ossProperties.getBucketName(), objectKey);
-        S3ObjectInputStream inputStream = object.getObjectContent();
+        S3ObjectInputStream inputStream = getObjectInputStream(objectKey);
 
         final int available = inputStream.available();
         final byte[] result = new byte[available];
@@ -284,8 +284,7 @@ public class OssTemplate implements OssOperations {
 
     @Override
     public void download(String objectKey, OutputStream outputStream) throws IOException {
-        S3Object object = client.getObject(ossProperties.getBucketName(), objectKey);
-        S3ObjectInputStream inputStream = object.getObjectContent();
+        S3ObjectInputStream inputStream = getObjectInputStream(objectKey);
         IOUtils.copy(inputStream, outputStream);
     }
 
@@ -423,6 +422,24 @@ public class OssTemplate implements OssOperations {
 
         return generatePresignedUrl(request);
 
+    }
+
+    /**
+     * 获取文件输入流
+     *
+     * @param objectKey Object 完整路径
+     * @return 文件输入流
+     */
+    private S3ObjectInputStream getObjectInputStream(String objectKey) {
+        GetObjectRequest getObjectRequest = new GetObjectRequest(ossProperties.getBucketName(), objectKey);
+
+        ossHandler.beforeDownload(getObjectRequest);
+
+        S3Object object = client.getObject(getObjectRequest);
+
+        ossHandler.afterDownload(getObjectRequest, object.getObjectMetadata());
+
+        return object.getObjectContent();
     }
 
     /**

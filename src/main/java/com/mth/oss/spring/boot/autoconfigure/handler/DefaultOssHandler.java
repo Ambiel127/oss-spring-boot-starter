@@ -1,8 +1,6 @@
 package com.mth.oss.spring.boot.autoconfigure.handler;
 
-import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
-import com.amazonaws.services.s3.model.PutObjectRequest;
-import com.amazonaws.services.s3.model.PutObjectResult;
+import com.amazonaws.services.s3.model.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -24,12 +22,25 @@ public class DefaultOssHandler implements OssHandler {
         log.info("before file upload: {}", request.getKey());
 
         request.setGeneralProgressListener(
-                progressEvent -> log.info("Transferred bytes: " + progressEvent.getBytesTransferred()));
+                progressEvent -> log.info("Upload bytes: " + progressEvent.getBytesTransferred()));
     }
 
     @Override
     public void afterUpload(PutObjectRequest request, PutObjectResult result) {
         log.info("after file upload: {}", request.getKey());
+    }
+
+    @Override
+    public void beforeDownload(GetObjectRequest request) {
+        log.info("before file download: {}", request.getKey());
+
+        request.setGeneralProgressListener(
+                progressEvent -> log.info("Download bytes: " + progressEvent.getBytesTransferred()));
+    }
+
+    @Override
+    public void afterDownload(GetObjectRequest request, ObjectMetadata metadata) {
+        log.info("after file download: {}", request.getKey());
     }
 
     @Override
