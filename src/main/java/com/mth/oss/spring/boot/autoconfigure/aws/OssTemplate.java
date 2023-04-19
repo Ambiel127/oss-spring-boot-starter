@@ -33,7 +33,6 @@ public class OssTemplate implements OssOperations {
     @Resource
     private OssProperties ossProperties;
 
-    @Resource
     private OssHandler ossHandler;
 
 

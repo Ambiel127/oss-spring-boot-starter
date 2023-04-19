@@ -2,7 +2,6 @@ package com.mth.oss.spring.boot.autoconfigure.handler;
 
 import com.amazonaws.services.s3.model.*;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
 
 import java.net.URL;
 import java.util.List;
@@ -14,7 +13,6 @@ import java.util.List;
  * @since 1.3
  */
 @Slf4j
-@Component
 public class DefaultOssHandler implements OssHandler {
 
     @Override

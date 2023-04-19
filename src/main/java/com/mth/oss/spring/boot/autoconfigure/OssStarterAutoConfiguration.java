@@ -1,6 +1,7 @@
 package com.mth.oss.spring.boot.autoconfigure;
 
 import com.mth.oss.spring.boot.autoconfigure.aws.OssTemplate;
+import com.mth.oss.spring.boot.autoconfigure.handler.DefaultOssHandler;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
@@ -25,7 +26,9 @@ public class OssStarterAutoConfiguration {
     @ConditionalOnMissingBean
     @ConditionalOnProperty(prefix = "oss" , name = "enable" , havingValue = "true")
     public OssTemplate ossTemplate() {
-        return new OssTemplate();
+        OssTemplate ossTemplate = new OssTemplate();
+        ossTemplate.setOssHandler(new DefaultOssHandler());
+        return ossTemplate;
     }
 
 }
