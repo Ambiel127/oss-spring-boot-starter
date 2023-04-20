@@ -1,7 +1,7 @@
 package com.mth.oss.spring.boot.autoconfigure.health;
 
 import com.mth.oss.spring.boot.autoconfigure.OssProperties;
-import com.mth.oss.spring.boot.autoconfigure.aws.OssTemplate;
+import com.mth.oss.spring.boot.autoconfigure.core.OssTemplate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;

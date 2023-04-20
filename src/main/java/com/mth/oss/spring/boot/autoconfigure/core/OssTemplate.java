@@ -91,7 +91,7 @@ public class OssTemplate implements OssOperations {
 
     @Override
     public String upload(InputStream inputStream, String objectKey) {
-        return upload(inputStream, objectKey, MediaType.APPLICATION_OCTET_STREAM_VALUE);
+        return upload(inputStream, objectKey, "application/octet-stream");
     }
 
     @Override
@@ -154,7 +154,7 @@ public class OssTemplate implements OssOperations {
 
     @Override
     public InitiateMultipartUploadResult initMultipartUpload(String objectKey) {
-        return initMultipartUpload(objectKey, MediaType.APPLICATION_OCTET_STREAM_VALUE);
+        return initMultipartUpload(objectKey, "application/octet-stream");
     }
 
     @Override

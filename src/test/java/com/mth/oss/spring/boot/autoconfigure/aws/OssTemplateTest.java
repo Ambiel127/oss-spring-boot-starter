@@ -12,7 +12,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 
 import javax.annotation.Resource;
@@ -261,7 +260,7 @@ public class OssTemplateTest {
         List<PartETag> partETags = new ArrayList<>();
 
         // initial multipart upload
-        InitiateMultipartUploadResult initResponse = ossTemplate.initMultipartUpload(testObjectKey, MediaType.TEXT_PLAIN_VALUE);
+        InitiateMultipartUploadResult initResponse = ossTemplate.initMultipartUpload(testObjectKey, "text/plain");
         assertNotNull(initResponse);
         assertNotNull(initResponse.getUploadId());
         System.out.println("uploadId: " + initResponse.getUploadId());
@@ -332,7 +331,7 @@ public class OssTemplateTest {
             System.out.println(url);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setDoOutput(true);
-            connection.setRequestProperty("Content-Type", MediaType.APPLICATION_PDF_VALUE);
+            connection.setRequestProperty("Content-Type", "text/plain");
             connection.setRequestMethod("PUT");
             DataOutputStream out = new DataOutputStream(connection.getOutputStream());
             fis.read(bytes, 0, (int) partSize);

@@ -18,7 +18,6 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 @EnableConfigurationProperties(OssProperties.class)
-@ConditionalOnWebApplication
 @ComponentScan(basePackages = "com.mth.oss.spring.boot.autoconfigure")
 public class OssStarterAutoConfiguration {
 
