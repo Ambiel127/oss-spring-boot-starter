@@ -1,6 +1,7 @@
 package com.mth.oss.spring.boot.autoconfigure.aws;
 
 import com.amazonaws.services.s3.model.*;
+import com.mth.oss.spring.boot.autoconfigure.core.OssTemplate;
 import lombok.SneakyThrows;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;

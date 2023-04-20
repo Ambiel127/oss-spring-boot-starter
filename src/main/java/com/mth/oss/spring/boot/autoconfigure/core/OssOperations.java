@@ -1,4 +1,4 @@
-package com.mth.oss.spring.boot.autoconfigure.service;
+package com.mth.oss.spring.boot.autoconfigure.core;
 
 import com.amazonaws.services.s3.model.*;
 import org.springframework.util.StringUtils;

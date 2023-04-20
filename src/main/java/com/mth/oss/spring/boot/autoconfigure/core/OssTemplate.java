@@ -1,4 +1,4 @@
-package com.mth.oss.spring.boot.autoconfigure.aws;
+package com.mth.oss.spring.boot.autoconfigure.core;
 
 import com.amazonaws.HttpMethod;
 import com.amazonaws.services.s3.AmazonS3;
