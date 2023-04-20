@@ -7,10 +7,8 @@ import com.amazonaws.util.IOUtils;
 import com.mth.oss.spring.boot.autoconfigure.OssProperties;
 import com.mth.oss.spring.boot.autoconfigure.handler.DefaultOssHandler;
 import com.mth.oss.spring.boot.autoconfigure.handler.OssHandler;
-import com.mth.oss.spring.boot.autoconfigure.service.OssOperations;
-import org.springframework.http.MediaType;
+import lombok.RequiredArgsConstructor;
 
-import javax.annotation.Resource;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -27,13 +25,12 @@ import java.util.concurrent.TimeUnit;
  * @author <a href="mailto:ambiel127@163.com">Matianhao</a>
  * @since 1.3
  */
+@RequiredArgsConstructor
 public class OssTemplate implements OssOperations {
 
-    @Resource
-    private AmazonS3 client;
+    private final AmazonS3 client;
 
-    @Resource
-    private OssProperties ossProperties;
+    private final OssProperties ossProperties;
 
     private OssHandler ossHandler;
 

@@ -1,10 +1,10 @@
 package com.mth.oss.spring.boot.autoconfigure;
 
-import com.mth.oss.spring.boot.autoconfigure.aws.OssTemplate;
+import com.amazonaws.services.s3.AmazonS3;
+import com.mth.oss.spring.boot.autoconfigure.core.OssTemplate;
 import com.mth.oss.spring.boot.autoconfigure.handler.DefaultOssHandler;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -24,8 +24,8 @@ public class OssStarterAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
     @ConditionalOnProperty(prefix = "oss" , name = "enable" , havingValue = "true")
-    public OssTemplate ossTemplate() {
-        OssTemplate ossTemplate = new OssTemplate();
+    public OssTemplate ossTemplate(AmazonS3 client, OssProperties ossProperties) {
+        OssTemplate ossTemplate = new OssTemplate(client, ossProperties);
         ossTemplate.setOssHandler(new DefaultOssHandler());
         return ossTemplate;
     }
