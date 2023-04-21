@@ -230,11 +230,11 @@ public interface OssOperations {
     /**
      * 生成上传对象预签名 URL
      *
-     * @param uploadId 分片上传唯一ID
+     * @param uploadId   分片上传唯一ID
      * @param partNumber 分片序号
-     * @param objectKey Object 完整路径
-     * @param duration  链接有效时长
-     * @param unit      时间单位
+     * @param objectKey  Object 完整路径
+     * @param duration   链接有效时长
+     * @param unit       时间单位
      * @return 授权上传的 URL 对象
      */
     URL presignedUrlForMultipartUpload(String uploadId, int partNumber, String objectKey, int duration, TimeUnit unit);
@@ -250,7 +250,7 @@ public interface OssOperations {
     /**
      * 列出已上传的分片
      *
-     * @param uploadId 分片上传唯一ID
+     * @param uploadId  分片上传唯一ID
      * @param objectKey Object 完整路径
      * @return 已上传结果对象
      */
@@ -282,12 +282,12 @@ public interface OssOperations {
     /**
      * 合并分片
      *
-     * @param uploadId 分片上传唯一ID
+     * @param uploadId  分片上传唯一ID
      * @param objectKey Object 完整路径
-     * @param partETags 用于标识要完成的多部分上传的各个部分的部件号和标签列表
+     * @param eTags     用于标识要完成的多部分上传的各个部分的部件号和标签列表
      * @return 合并结果对象
      */
-    CompleteMultipartUploadResult completeMultipartUpload(String uploadId, String objectKey, List<PartETag> partETags);
+    CompleteMultipartUploadResult completeMultipartUpload(String uploadId, String objectKey, List<PartETag> eTags);
 
     /**
      * 合并分片
@@ -300,7 +300,7 @@ public interface OssOperations {
     /**
      * 中止分段上传
      *
-     * @param uploadId 分片上传唯一ID
+     * @param uploadId  分片上传唯一ID
      * @param objectKey Object 完整路径
      */
     void abortMultipartUpload(String uploadId, String objectKey);
@@ -360,6 +360,7 @@ public interface OssOperations {
      *
      * @param objectKey Object 完整路径
      * @return byte数组
+     * @throws IOException 输入流操作异常
      */
     byte[] download(String objectKey) throws IOException;
 
@@ -368,7 +369,7 @@ public interface OssOperations {
      *
      * @param objectKey    Object 完整路径
      * @param outputStream 输出流
-     * @return 下载成功true；否则false
+     * @throws IOException 输入流操作异常
      */
     void download(String objectKey, OutputStream outputStream) throws IOException;
 
@@ -406,7 +407,7 @@ public interface OssOperations {
      * 获取文件
      *
      * @param bucketName 存储空间名称
-     * @param objectKey Object完整路径，不能包含Bucket名称
+     * @param objectKey  Object完整路径，不能包含Bucket名称
      * @return 文件对象
      */
     S3Object getObject(String bucketName, String objectKey);

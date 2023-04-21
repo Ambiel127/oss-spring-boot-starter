@@ -23,7 +23,7 @@ public class OssStarterAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    @ConditionalOnProperty(prefix = "oss" , name = "enable" , havingValue = "true")
+    @ConditionalOnProperty(prefix = "oss", name = "enable", havingValue = "true")
     public OssTemplate ossTemplate(AmazonS3 client, OssProperties ossProperties) {
         OssTemplate ossTemplate = new OssTemplate(client, ossProperties);
         ossTemplate.setOssHandler(new DefaultOssHandler());

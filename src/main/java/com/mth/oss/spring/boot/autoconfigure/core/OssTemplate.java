@@ -215,9 +215,9 @@ public class OssTemplate implements OssOperations {
     }
 
     @Override
-    public CompleteMultipartUploadResult completeMultipartUpload(String uploadId, String objectKey, List<PartETag> partETags) {
+    public CompleteMultipartUploadResult completeMultipartUpload(String uploadId, String objectKey, List<PartETag> eTags) {
         CompleteMultipartUploadRequest compRequest = new CompleteMultipartUploadRequest(
-                ossProperties.getBucketName(), objectKey, uploadId, partETags);
+                ossProperties.getBucketName(), objectKey, uploadId, eTags);
         return completeMultipartUpload(compRequest);
     }
 
