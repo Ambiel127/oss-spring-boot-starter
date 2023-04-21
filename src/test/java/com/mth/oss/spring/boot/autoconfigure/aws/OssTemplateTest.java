@@ -1,5 +1,6 @@
 package com.mth.oss.spring.boot.autoconfigure.aws;
 
+import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.*;
 import com.mth.oss.spring.boot.autoconfigure.core.OssTemplate;
 import lombok.SneakyThrows;
@@ -237,6 +238,10 @@ public class OssTemplateTest {
         assertNotNull(initResponse.getUploadId());
         System.out.println("uploadId: " + initResponse.getUploadId());
 
+        URL url = ossTemplate.presignedUrlForMultipartUpload(
+                initResponse.getUploadId(), 1, testObjectKey, 5, TimeUnit.MINUTES);
+        System.out.println("upload url: " + url);
+
         // abort multipart upload
         ossTemplate.abortMultipartUpload(initResponse.getUploadId(), testObjectKey);
         System.out.println("abort multipart upload");
@@ -398,7 +403,7 @@ public class OssTemplateTest {
         assertFalse(testDownLoadFile.exists());
 
         // 下载
-        boolean downloadResult = ossTemplate.download(objectKey, testDownLoadFile);
+        boolean downloadResult = ossTemplate.download(objectKey, testDownLoadFile.getAbsolutePath());
 
         // 验证本地文件
         assertTrue(downloadResult);
@@ -593,6 +598,16 @@ public class OssTemplateTest {
         // 删除
         assertTrue(ossTemplate.deleteObject(destinationKey));
         assertFileAndClean(objectKey);
+    }
+
+    @Test
+    void testClientInstance() {
+        // 直接使用客户端 api
+        AmazonS3 client = ossTemplate.getClientInstance();
+        client.putObject(bucketName, testObjectKey, testFile);
+
+        // 验证并清理
+        assertFileAndClean(testObjectKey);
     }
 
     /**
