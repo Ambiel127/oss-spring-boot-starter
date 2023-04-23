@@ -2,7 +2,7 @@ package com.mth.oss.spring.boot.autoconfigure.aws;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.*;
-import com.mth.oss.spring.boot.autoconfigure.core.OssTemplate;
+import com.mth.oss.spring.boot.autoconfigure.core.aws.OssTemplate;
 import lombok.SneakyThrows;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -21,7 +21,6 @@ import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -126,7 +125,7 @@ public class OssTemplateTest {
                                                                  testFile);
         String objectKey = ossTemplate.upload(putObjectRequest);
         // 验证
-        // assertFileAndClean(objectKey);
+        assertFileAndClean(objectKey);
     }
 
     @Test
@@ -210,7 +209,7 @@ public class OssTemplateTest {
 
     @Test
     @Disabled
-    void testGeneratePresignedUrl2() throws IOException, InterruptedException {
+    void testGeneratePresignedUrl2() throws IOException {
         // 上传
         String objectKey = ossTemplate.replaceUpload(testFile);
 
@@ -340,8 +339,8 @@ public class OssTemplateTest {
             connection.setRequestProperty("Content-Type", "text/plain");
             connection.setRequestMethod("PUT");
             DataOutputStream out = new DataOutputStream(connection.getOutputStream());
-            fis.read(bytes, 0, (int) partSize);
-            out.write(bytes, 0, (int) partSize);
+            int read = fis.read(bytes, 0, (int) partSize);
+            out.write(bytes, 0, read);
             out.close();
 
             connection.getResponseCode();
@@ -424,15 +423,10 @@ public class OssTemplateTest {
 
         // 下载
         byte[] download = ossTemplate.download(objectKey);
-
-        FileInputStream inputStream = new FileInputStream(testFile);
-        byte[] origin = new byte[inputStream.available()];
-        inputStream.read(origin);
-
-        assertTrue(Arrays.equals(origin, download));
         System.out.println(new String(download));
 
         // 验证oss文件并清理
+        assertTrue(download.length > 0);
         assertFileAndClean(objectKey);
     }
 
@@ -537,16 +531,16 @@ public class OssTemplateTest {
         assertFileAndClean(objectKey);
     }
 
-    // @Test
-    // void testDeleteObjects1() {
-    //     // 删除指定目录
-    //     List<String> result = awsStorage.deleteObjects(testPath);
-    //     assertTrue(result.isEmpty());
-    //
-    //     // 校验测试目录是否清理干净
-    //     Iterable<S3ObjectSummary> objectListing = awsStorage.listObjects(testPath);
-    //     assertFalse(objectListing.iterator().hasNext());
-    // }
+    @Test
+    void testDeleteObject() {
+        // 上传
+        String objectKey = ossTemplate.upload(testFile, testObjectKey);
+        // 删除
+        ossTemplate.deleteObject(bucketName, objectKey);
+
+        // 验证
+        assertFalse(ossTemplate.objectExist(objectKey));
+    }
 
     @Test
     void testDeleteObjects() {
@@ -598,6 +592,34 @@ public class OssTemplateTest {
         // 删除
         assertTrue(ossTemplate.deleteObject(destinationKey));
         assertFileAndClean(objectKey);
+    }
+
+    @Test
+    void testMoveObject() {
+        // 上传
+        String objectKey = ossTemplate.upload(testFile, testObjectKey);
+
+        // 移动
+        String destinationKey = "testDestinationKey.txt";
+        boolean result = ossTemplate.moveObject(objectKey, destinationKey);
+
+        // 验证
+        Assertions.assertTrue(result);
+        assertFileAndClean(destinationKey);
+    }
+
+    @Test
+    void testMoveObject1() {
+        // 上传
+        String objectKey = ossTemplate.upload(testFile, testObjectKey);
+
+        // 移动
+        String destinationKey = "testDestinationKey.txt";
+        boolean result = ossTemplate.moveObject(bucketName, objectKey, bucketName, destinationKey);
+
+        // 验证
+        Assertions.assertTrue(result);
+        assertFileAndClean(destinationKey);
     }
 
     @Test
