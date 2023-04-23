@@ -1,4 +1,4 @@
-package com.mth.oss.spring.boot.autoconfigure.core;
+package com.mth.oss.spring.boot.autoconfigure.core.aws;
 
 import com.amazonaws.HttpMethod;
 import com.amazonaws.services.s3.AmazonS3;
@@ -349,9 +349,14 @@ public class OssTemplate implements OssOperations {
 
     @Override
     public boolean deleteObject(String objectKey) {
+        return deleteObject(ossProperties.getBucketName(), objectKey);
+    }
+
+    @Override
+    public boolean deleteObject(String bucketName, String objectKey) {
         ossHandler.beforeObjectDelete(Collections.singletonList(objectKey));
 
-        client.deleteObject(ossProperties.getBucketName(), objectKey);
+        client.deleteObject(bucketName, objectKey);
 
         ossHandler.afterObjectDelete(Collections.singletonList(objectKey));
         return !objectExist(objectKey);
@@ -386,6 +391,18 @@ public class OssTemplate implements OssOperations {
         CopyObjectRequest request = new CopyObjectRequest(sourceBucketName, sourceKey,
                                                           destinationBucketName, destinationKey);
         return copyObject(request);
+    }
+
+    @Override
+    public boolean moveObject(String sourceKey, String destinationKey) {
+        copyObject(sourceKey, destinationKey);
+        return deleteObject(sourceKey);
+    }
+
+    @Override
+    public boolean moveObject(String sourceBucketName, String sourceKey, String destinationBucketName, String destinationKey) {
+        copyObject(sourceBucketName, sourceKey, destinationBucketName, destinationKey);
+        return deleteObject(sourceBucketName, sourceKey);
     }
 
     /**

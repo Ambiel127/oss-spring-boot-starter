@@ -1,4 +1,4 @@
-package com.mth.oss.spring.boot.autoconfigure.core;
+package com.mth.oss.spring.boot.autoconfigure.core.aws;
 
 import com.amazonaws.services.s3.model.*;
 import org.springframework.util.StringUtils;
@@ -463,6 +463,17 @@ public interface OssOperations {
     boolean deleteObject(String objectKey);
 
     /**
+     * 删除单个文件
+     * <p>
+     * 如果要删除目录，目录必须为空
+     *
+     * @param bucketName 桶名称
+     * @param objectKey  Object完整路径
+     * @return 是否删除成功，删除成功true；删除失败false
+     */
+    boolean deleteObject(String bucketName, String objectKey);
+
+    /**
      * 删除指定的多个文件
      *
      * @param objectKeys Object完整路径集合，不能包含Bucket名称
@@ -493,6 +504,30 @@ public interface OssOperations {
      * @return 是否拷贝成功，拷贝成功true；拷贝失败false
      */
     boolean copyObject(String sourceBucketName, String sourceKey, String destinationBucketName, String destinationKey);
+
+    /**
+     * 移动文件，也可以达到重命名的效果（如 linux 中的 mv 命令）
+     * <p>
+     * 将源Bucket中的文件（Object）复制到同一地域下同一目标Bucket中
+     *
+     * @param sourceKey      源Object完整路径
+     * @param destinationKey 目标Object完整路径
+     * @return 是否拷贝成功，拷贝成功true；拷贝失败false
+     */
+    boolean moveObject(String sourceKey, String destinationKey);
+
+    /**
+     * 移动文件，也可以达到重命名的效果（如 linux 中的 mv 命令）
+     * <p>
+     * 将源Bucket中的文件（Object）复制到同一地域下相同或不同目标Bucket中
+     *
+     * @param sourceBucketName      源存储空间名称
+     * @param sourceKey             源Object完整路径
+     * @param destinationBucketName 目标存储空间名称
+     * @param destinationKey        目标Object完整路径
+     * @return 是否拷贝成功，拷贝成功true；拷贝失败false
+     */
+    boolean moveObject(String sourceBucketName, String sourceKey, String destinationBucketName, String destinationKey);
 
 
     // ------------------------------------------------------------
