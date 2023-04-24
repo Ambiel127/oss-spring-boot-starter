@@ -1,8 +1,7 @@
-package com.mth.oss.spring.boot.autoconfigure.aws;
+package com.mth.oss.spring.boot.autoconfigure.core.aws;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.*;
-import com.mth.oss.spring.boot.autoconfigure.core.aws.OssTemplate;
 import lombok.SneakyThrows;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -11,12 +10,12 @@ import org.apache.http.impl.client.HttpClients;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
-import javax.annotation.Resource;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -28,7 +27,7 @@ import java.util.stream.Collectors;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * aws s3 测试类
+ * aws s3 对象存储服务测试类
  *
  * @author <a href="mailto:ambiel127@163.com">Matianhao</a>
  * @since 1.3
@@ -46,7 +45,7 @@ public class OssTemplateTest {
     @Value("${oss.bucket-name}")
     private String bucketName;
 
-    @Resource
+    @Autowired(required = false)
     private OssTemplate ossTemplate;
 
 

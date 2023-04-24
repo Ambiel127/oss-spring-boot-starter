@@ -55,6 +55,10 @@ public class OssClientFactory {
 
     @PostConstruct
     public void shutdown() {
+        if (awsClient == null) {
+            return;
+        }
+
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             awsClient.shutdown();
             System.out.println("shut down oss client");
