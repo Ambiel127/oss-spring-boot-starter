@@ -24,6 +24,8 @@ public class OssClientFactory {
 
     private static volatile AmazonS3 awsClient;
 
+    private OssClientFactory() {}
+
     @Bean
     public static AmazonS3 getAwsClient(OssProperties properties) {
         if (awsClient == null) {
