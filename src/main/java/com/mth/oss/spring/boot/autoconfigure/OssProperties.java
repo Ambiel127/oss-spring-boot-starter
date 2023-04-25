@@ -53,4 +53,11 @@ public class OssProperties {
      */
     private Boolean pathStyleAccess = false;
 
+    /**
+     * 本地数据存储路径：使用 Local 本地对象存储服务必填
+     *
+     * @since 1.3
+     */
+    private String localBasePath;
+
 }
