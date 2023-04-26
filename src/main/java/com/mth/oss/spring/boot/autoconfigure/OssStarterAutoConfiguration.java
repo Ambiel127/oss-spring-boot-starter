@@ -36,7 +36,7 @@ public class OssStarterAutoConfiguration {
     @ConditionalOnMissingBean
     @ConditionalOnProperty(prefix = "oss", name = "enable", havingValue = "true")
     @ConditionalOnExpression(
-            "#{ environment['oss.localBasePath'] != null && !''.equals(environment['oss.localBasePath']) }")
+            "#{ environment['oss.local-base-path'] != null && !''.equals(environment['oss.local-base-path']) }")
     public LocalOssTemplate localOssTemplate(OssProperties ossProperties) {
         LocalOssTemplate localOssTemplate = new LocalOssTemplate(ossProperties);
         localOssTemplate.setOssHandler(new DefaultOssHandler());

@@ -1,7 +1,9 @@
 oss:
   enable: true
   #  expiration:
-  localBasePath: D:\
+
+  # local
+  local-base-path: D:\
 
   # minio
   path-style-access: true
