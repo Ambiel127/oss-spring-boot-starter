@@ -3,6 +3,7 @@ package com.mth.oss.spring.boot.autoconfigure.health;
 import com.mth.oss.spring.boot.autoconfigure.OssProperties;
 import com.mth.oss.spring.boot.autoconfigure.core.aws.OssTemplate;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.stereotype.Component;
@@ -17,17 +18,15 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class OssHealthIndicator implements HealthIndicator {
 
-    private OssTemplate ossTemplate;
+    private final ObjectProvider<OssTemplate> ossTemplateProvider;
 
     private final OssProperties ossProperties;
-
-    public void setOssTemplate(OssTemplate ossTemplate) {
-        this.ossTemplate = ossTemplate;
-    }
 
 
     @Override
     public Health health() {
+        OssTemplate ossTemplate = ossTemplateProvider.getIfAvailable();
+
         if (ossTemplate == null) {
             return Health.down().build();
         }
