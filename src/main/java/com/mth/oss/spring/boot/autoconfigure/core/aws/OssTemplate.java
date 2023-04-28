@@ -5,6 +5,7 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.*;
 import com.amazonaws.util.IOUtils;
 import com.mth.oss.spring.boot.autoconfigure.OssProperties;
+import com.mth.oss.spring.boot.autoconfigure.handler.DefaultObjectKeyHandler;
 import com.mth.oss.spring.boot.autoconfigure.handler.DefaultOssHandler;
 import com.mth.oss.spring.boot.autoconfigure.handler.OssHandler;
 import lombok.RequiredArgsConstructor;
@@ -14,8 +15,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -26,7 +25,7 @@ import java.util.concurrent.TimeUnit;
  * @since 1.3
  */
 @RequiredArgsConstructor
-public class OssTemplate implements OssOperations {
+public class OssTemplate implements OssOperations, DefaultObjectKeyHandler {
 
     private final AmazonS3 client;
 
@@ -405,30 +404,6 @@ public class OssTemplate implements OssOperations {
         return deleteObject(sourceBucketName, sourceKey);
     }
 
-    /**
-     * 获取默认 object key 完整路径
-     * <p>
-     * 默认前缀为 yyyyMMdd 日期文件夹；
-     * 如 file 文件名为 temp.txt，则默认 Object 完整路径为 "yyyyMMdd/temp_yyyyMMddHHmmssSSS.txt"
-     *
-     * @param file 文件
-     * @return object 完整路径
-     */
-    private String getDefaultObjectKey(File file) {
-        // 获取文件名称和扩展名
-        String fileName = file.getName();
-        String extra = fileName.substring(fileName.lastIndexOf("."));
-        String name = fileName.substring(0, fileName.lastIndexOf("."));
-
-        // 路径前缀
-        String pathPrefix = LocalDate.now().format(DATE_FORMATTER);
-
-        // 时间戳字符串
-        String dateTimeStr = LocalDateTime.now().format(DATE_TIME_FORMATTER);
-
-        // 重新命名后的 Object 完整路径
-        return pathPrefix + "/" + name + "_" + dateTimeStr + extra;
-    }
 
     /**
      * 生成签名 URL 授权访问

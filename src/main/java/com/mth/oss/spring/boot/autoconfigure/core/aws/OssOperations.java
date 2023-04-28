@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -21,17 +20,6 @@ import java.util.concurrent.TimeUnit;
  * @since 1.2
  */
 public interface OssOperations {
-
-    /**
-     * 时间戳字符串格式化 yyyyMMddHHmmssSSS
-     */
-    DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS");
-
-    /**
-     * 日期字符串格式化 yyyyMMdd
-     */
-    DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMdd");
-
 
     // ------------------------------------------------------------
     // ----------------------- bucket 管理 ------------------------
