@@ -73,4 +73,26 @@ public interface LocalOssOperations {
     String replaceUpload(File file, String objectKey);
 
 
+    // ------------------------------------------------------------
+    // ---------------------- download 下载 -----------------------
+    // ------------------------------------------------------------
+
+    /**
+     * 下载到指定 File 中
+     *
+     * @param objectKey    Object 完整路径
+     * @param fullFilePath 指定下载文件的路径，如果本地存在该文件会覆盖，不存在则新建。
+     * @return 下载成功true；否则false
+     */
+    boolean download(String objectKey, String fullFilePath);
+
+    /**
+     * 下载到指定 File 中
+     *
+     * @param objectKey Object 完整路径
+     * @param file      指定下载的文件，如果本地存在该文件会覆盖，不存在则新建。
+     * @return 下载成功true；否则false
+     */
+    boolean download(String objectKey, File file);
+
 }

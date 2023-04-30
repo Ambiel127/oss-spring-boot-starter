@@ -77,6 +77,23 @@ public class LocalOssTemplate implements LocalOssOperations, DefaultObjectKeyHan
         return upload(file, objectKey);
     }
 
+    @Override
+    public boolean download(String objectKey, String fullFilePath) {
+        File file = new File(fullFilePath);
+        return download(objectKey, file);
+    }
+
+    @Override
+    public boolean download(String objectKey, File file) {
+        File source = getObjectFile(objectKey);
+        try {
+            FileUtils.copyFile(source, file);
+        } catch (IOException e) {
+            throw new IORuntimeException(e);
+        }
+        return file.exists();
+    }
+
 
     /**
      * 获取完整路径
