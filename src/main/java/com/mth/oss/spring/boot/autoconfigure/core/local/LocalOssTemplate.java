@@ -94,6 +94,17 @@ public class LocalOssTemplate implements LocalOssOperations, DefaultObjectKeyHan
         return file.exists();
     }
 
+    @Override
+    public byte[] download(String objectKey) {
+        File source = getObjectFile(objectKey);
+
+        try {
+            return FileUtils.readFileToByteArray(source);
+        } catch (IOException e) {
+            throw new IORuntimeException(e);
+        }
+    }
+
 
     /**
      * 获取完整路径

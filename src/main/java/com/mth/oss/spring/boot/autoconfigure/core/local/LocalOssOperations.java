@@ -95,4 +95,12 @@ public interface LocalOssOperations {
      */
     boolean download(String objectKey, File file);
 
+    /**
+     * 下载 byte 数组
+     *
+     * @param objectKey Object 完整路径
+     * @return byte数组
+     */
+    byte[] download(String objectKey);
+
 }
