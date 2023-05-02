@@ -2,6 +2,7 @@ package com.mth.oss.spring.boot.autoconfigure.core.local;
 
 import java.io.File;
 import java.io.InputStream;
+import java.io.OutputStream;
 
 /**
  * 本地对象存储服务操作
@@ -102,5 +103,13 @@ public interface LocalOssOperations {
      * @return byte数组
      */
     byte[] download(String objectKey);
+
+    /**
+     * 下载到指定输出流
+     *
+     * @param objectKey    Object 完整路径
+     * @param outputStream 输出流
+     */
+    void download(String objectKey, OutputStream outputStream);
 
 }

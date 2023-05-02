@@ -8,10 +8,7 @@ import com.mth.oss.spring.boot.autoconfigure.handler.OssHandler;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.FileUtils;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Objects;
@@ -100,6 +97,16 @@ public class LocalOssTemplate implements LocalOssOperations, DefaultObjectKeyHan
 
         try {
             return FileUtils.readFileToByteArray(source);
+        } catch (IOException e) {
+            throw new IORuntimeException(e);
+        }
+    }
+
+    @Override
+    public void download(String objectKey, OutputStream outputStream) {
+        File source = getObjectFile(objectKey);
+        try {
+            FileUtils.copyFile(source, outputStream);
         } catch (IOException e) {
             throw new IORuntimeException(e);
         }
