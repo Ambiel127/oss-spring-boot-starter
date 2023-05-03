@@ -112,6 +112,12 @@ public class LocalOssTemplate implements LocalOssOperations, DefaultObjectKeyHan
         }
     }
 
+    @Override
+    public boolean objectExist(String objectKey) {
+        File file = getObjectFile(objectKey);
+        return file.exists();
+    }
+
 
     /**
      * 获取完整路径

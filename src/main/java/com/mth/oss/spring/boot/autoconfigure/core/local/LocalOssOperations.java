@@ -112,4 +112,17 @@ public interface LocalOssOperations {
      */
     void download(String objectKey, OutputStream outputStream);
 
+
+    // ------------------------------------------------------------
+    // ------------------ object manage 文件管理 -------------------
+    // ------------------------------------------------------------
+
+    /**
+     * 判断文件是否存在
+     *
+     * @param objectKey Object完整路径，不能包含Bucket名称
+     * @return 存在true；不存在false
+     */
+    boolean objectExist(String objectKey);
+
 }
