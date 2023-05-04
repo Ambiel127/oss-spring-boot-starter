@@ -9,8 +9,6 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.FileUtils;
 
 import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.Objects;
 
 /**
@@ -44,10 +42,8 @@ public class LocalOssTemplate implements LocalOssOperations, DefaultObjectKeyHan
 
     @Override
     public String upload(InputStream inputStream, String objectKey) {
-        String completeObjectKey = getCompleteObjectKey(objectKey);
-
         try {
-            FileUtils.copyToFile(inputStream, new File(completeObjectKey));
+            FileUtils.copyToFile(inputStream, getObject(objectKey));
         } catch (IOException e) {
             throw new IORuntimeException(e);
         }
@@ -63,13 +59,9 @@ public class LocalOssTemplate implements LocalOssOperations, DefaultObjectKeyHan
 
     @Override
     public String replaceUpload(File file, String objectKey) {
-        String completeObjectKey = getCompleteObjectKey(objectKey);
-
-        try {
-            Files.deleteIfExists(Paths.get(completeObjectKey));
-        } catch (IOException e) {
-            throw new IORuntimeException(e);
-        }
+        File oldFile = getObject(objectKey);
+        // todo [matianhao] 测试是否需要删除旧文件？
+        oldFile.delete();
 
         return upload(file, objectKey);
     }
@@ -82,7 +74,7 @@ public class LocalOssTemplate implements LocalOssOperations, DefaultObjectKeyHan
 
     @Override
     public boolean download(String objectKey, File file) {
-        File source = getObjectFile(objectKey);
+        File source = getObject(objectKey);
         try {
             FileUtils.copyFile(source, file);
         } catch (IOException e) {
@@ -93,7 +85,7 @@ public class LocalOssTemplate implements LocalOssOperations, DefaultObjectKeyHan
 
     @Override
     public byte[] download(String objectKey) {
-        File source = getObjectFile(objectKey);
+        File source = getObject(objectKey);
 
         try {
             return FileUtils.readFileToByteArray(source);
@@ -104,7 +96,7 @@ public class LocalOssTemplate implements LocalOssOperations, DefaultObjectKeyHan
 
     @Override
     public void download(String objectKey, OutputStream outputStream) {
-        File source = getObjectFile(objectKey);
+        File source = getObject(objectKey);
         try {
             FileUtils.copyFile(source, outputStream);
         } catch (IOException e) {
@@ -114,8 +106,14 @@ public class LocalOssTemplate implements LocalOssOperations, DefaultObjectKeyHan
 
     @Override
     public boolean objectExist(String objectKey) {
-        File file = getObjectFile(objectKey);
+        File file = getObject(objectKey);
         return file.exists();
+    }
+
+    @Override
+    public File getObject(String objectKey) {
+        String completeObjectKey = getCompleteObjectKey(objectKey);
+        return new File(completeObjectKey);
     }
 
 
@@ -138,17 +136,6 @@ public class LocalOssTemplate implements LocalOssOperations, DefaultObjectKeyHan
      */
     public void setOssHandler(OssHandler ossHandler) {
         this.ossHandler = Objects.nonNull(ossHandler) ? ossHandler : new DefaultOssHandler();
-    }
-
-    /**
-     * 获取 object key 对应文件
-     *
-     * @param objectKey 路径名，包含文件名
-     * @return 文件对象
-     */
-    private File getObjectFile(String objectKey) {
-        String completeObjectKey = getCompleteObjectKey(objectKey);
-        return new File(completeObjectKey);
     }
 
 }

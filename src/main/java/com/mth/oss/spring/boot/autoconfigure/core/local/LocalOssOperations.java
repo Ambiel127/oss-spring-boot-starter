@@ -125,4 +125,13 @@ public interface LocalOssOperations {
      */
     boolean objectExist(String objectKey);
 
+    /**
+     * 获取文件
+     *
+     * @param objectKey Object完整路径，不能包含Bucket名称
+     * @return 文件对象
+     */
+    File getObject(String objectKey);
+
+
 }
