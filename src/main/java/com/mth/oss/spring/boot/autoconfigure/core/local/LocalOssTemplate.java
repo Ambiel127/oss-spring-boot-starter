@@ -59,10 +59,6 @@ public class LocalOssTemplate implements LocalOssOperations, DefaultObjectKeyHan
 
     @Override
     public String replaceUpload(File file, String objectKey) {
-        File oldFile = getObject(objectKey);
-        // todo [matianhao] 测试是否需要删除旧文件？
-        oldFile.delete();
-
         return upload(file, objectKey);
     }
 
