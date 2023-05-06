@@ -112,6 +112,12 @@ public class LocalOssTemplate implements LocalOssOperations, DefaultObjectKeyHan
         return new File(completeObjectKey);
     }
 
+    @Override
+    public boolean deleteObject(String objectKey) {
+        File file = getObject(objectKey);
+        return file.delete();
+    }
+
 
     /**
      * 获取完整路径

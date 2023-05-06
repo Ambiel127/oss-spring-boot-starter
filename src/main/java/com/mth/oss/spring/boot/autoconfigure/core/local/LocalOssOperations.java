@@ -133,5 +133,15 @@ public interface LocalOssOperations {
      */
     File getObject(String objectKey);
 
+    /**
+     * 删除单个文件
+     * <p>
+     * 如果要删除目录，目录必须为空
+     *
+     * @param objectKey Object完整路径，不能包含Bucket名称
+     * @return 是否删除成功，删除成功true；删除失败false
+     */
+    boolean deleteObject(String objectKey);
+
 
 }

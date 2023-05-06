@@ -11,8 +11,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Local 本地对象存储服务测试类
@@ -78,6 +77,16 @@ public class LocalOssTemplateTest {
         assertFileAndClean(key);
     }
 
+    @Test
+    void testDeleteObject() {
+        // 上传
+        String key = localOssTemplate.upload(testFile);
+        // 删除
+        assertTrue(localOssTemplate.deleteObject(key));
+        // 验证
+        assertFalse(localOssTemplate.objectExist(key));
+    }
+
     /**
      * 验证文件并清理文件
      *
@@ -92,8 +101,7 @@ public class LocalOssTemplateTest {
         assertTrue(localOssTemplate.objectExist(key));
 
         // 删除文件
-        // assertTrue(localOssTemplate.deleteObject(key));
-        assertTrue(localOssTemplate.getObject(key).delete());
+        assertTrue(localOssTemplate.deleteObject(key));
     }
 
 }
