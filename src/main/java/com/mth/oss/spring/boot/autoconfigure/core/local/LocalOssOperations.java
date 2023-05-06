@@ -33,7 +33,7 @@ public interface LocalOssOperations {
      * 通用上传文件，指定 Object 完整路径
      *
      * @param file      文件
-     * @param objectKey Object 完整路径，例如 exampleDir/exampleObject.txt
+     * @param objectKey Object 相对路径，例如 exampleDir/exampleObject.txt
      * @return 存储对象相对路径
      */
     String upload(File file, String objectKey);
@@ -45,7 +45,7 @@ public interface LocalOssOperations {
      *                    文件流：new FileInputStream("D:\\path\\exampleFile.txt");
      *                    网络流：new URL("https://www.example.com/").openStream();
      *                    字节数组：new ByteArrayInputStream("Hello OSS".getBytes())
-     * @param objectKey   Object 完整路径，例如 exampleDir/exampleObject.txt
+     * @param objectKey   Object 相对路径，例如 exampleDir/exampleObject.txt
      * @return 存储对象相对路径
      */
     String upload(InputStream inputStream, String objectKey);
@@ -68,7 +68,7 @@ public interface LocalOssOperations {
      * 场景：使用手册、说明文件等，需要替换文件但不修改文件路径的场景（路径不变，访问的地址也就不变）
      *
      * @param file      文件
-     * @param objectKey Object 完整路径，例如 exampleDir/exampleObject.txt
+     * @param objectKey Object 相对路径，例如 exampleDir/exampleObject.txt
      * @return 存储对象相对路径
      */
     String replaceUpload(File file, String objectKey);
@@ -81,7 +81,7 @@ public interface LocalOssOperations {
     /**
      * 下载到指定 File 中
      *
-     * @param objectKey    Object 完整路径
+     * @param objectKey    Object 相对路径，例如 exampleDir/exampleObject.txt
      * @param fullFilePath 指定下载文件的路径，如果本地存在该文件会覆盖，不存在则新建。
      * @return 下载成功true；否则false
      */
@@ -90,7 +90,7 @@ public interface LocalOssOperations {
     /**
      * 下载到指定 File 中
      *
-     * @param objectKey Object 完整路径
+     * @param objectKey Object 相对路径，例如 exampleDir/exampleObject.txt
      * @param file      指定下载的文件，如果本地存在该文件会覆盖，不存在则新建。
      * @return 下载成功true；否则false
      */
@@ -99,7 +99,7 @@ public interface LocalOssOperations {
     /**
      * 下载 byte 数组
      *
-     * @param objectKey Object 完整路径
+     * @param objectKey Object 相对路径，例如 exampleDir/exampleObject.txt
      * @return byte数组
      */
     byte[] download(String objectKey);
@@ -107,7 +107,7 @@ public interface LocalOssOperations {
     /**
      * 下载到指定输出流
      *
-     * @param objectKey    Object 完整路径
+     * @param objectKey    Object 相对路径，例如 exampleDir/exampleObject.txt
      * @param outputStream 输出流
      */
     void download(String objectKey, OutputStream outputStream);
@@ -120,7 +120,7 @@ public interface LocalOssOperations {
     /**
      * 判断文件是否存在
      *
-     * @param objectKey Object完整路径，不能包含Bucket名称
+     * @param objectKey Object 相对路径，例如 exampleDir/exampleObject.txt
      * @return 存在true；不存在false
      */
     boolean objectExist(String objectKey);
@@ -128,7 +128,7 @@ public interface LocalOssOperations {
     /**
      * 获取文件
      *
-     * @param objectKey Object完整路径，不能包含Bucket名称
+     * @param objectKey Object 相对路径，例如 exampleDir/exampleObject.txt
      * @return 文件对象
      */
     File getObject(String objectKey);
@@ -138,7 +138,7 @@ public interface LocalOssOperations {
      * <p>
      * 如果要删除目录，目录必须为空
      *
-     * @param objectKey Object完整路径，不能包含Bucket名称
+     * @param objectKey Object 相对路径，例如 exampleDir/exampleObject.txt
      * @return 是否删除成功，删除成功true；删除失败false
      */
     boolean deleteObject(String objectKey);
