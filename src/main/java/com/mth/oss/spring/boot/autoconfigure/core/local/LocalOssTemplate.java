@@ -9,7 +9,9 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.FileUtils;
 
 import java.io.*;
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * 对象存储服务的 Local 本地实现
@@ -116,6 +118,13 @@ public class LocalOssTemplate implements LocalOssOperations, DefaultObjectKeyHan
     public boolean deleteObject(String objectKey) {
         File file = getObject(objectKey);
         return file.delete();
+    }
+
+    @Override
+    public List<String> deleteObjects(List<String> objectKeys) {
+        return objectKeys.stream()
+                .filter(objectKey -> !deleteObject(objectKey))
+                .collect(Collectors.toList());
     }
 
 

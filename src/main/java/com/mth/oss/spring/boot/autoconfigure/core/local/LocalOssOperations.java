@@ -3,6 +3,7 @@ package com.mth.oss.spring.boot.autoconfigure.core.local;
 import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.List;
 
 /**
  * 本地对象存储服务操作
@@ -142,6 +143,14 @@ public interface LocalOssOperations {
      * @return 是否删除成功，删除成功true；删除失败false
      */
     boolean deleteObject(String objectKey);
+
+    /**
+     * 删除指定的多个文件
+     *
+     * @param objectKeys Object 相对路径集合，例如 exampleDir/exampleObject.txt
+     * @return 删除失败的文件列表
+     */
+    List<String> deleteObjects(List<String> objectKeys);
 
 
 }
