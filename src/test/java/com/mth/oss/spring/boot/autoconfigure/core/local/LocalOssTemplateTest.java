@@ -7,9 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.io.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -26,7 +24,9 @@ public class LocalOssTemplateTest {
 
     private static final File testFile = new File("C:\\Users\\watone\\Desktop\\test.txt");
 
-    private static final String testPathName = "localOssSpringBootStarterTestDir/test.txt";
+    private static final File testDownLoadFile = new File("C:\\Users\\watone\\Desktop\\test-download.txt");
+
+    private static final String testObjectKey = "localOssSpringBootStarterTestDir/test.txt";
 
 
     @Autowired(required = false)
@@ -36,6 +36,11 @@ public class LocalOssTemplateTest {
     void testLocalOssTemplate() {
         System.out.println("localOssTemplate: " + localOssTemplate.toString());
     }
+
+
+    // ------------------------------------------------------------
+    // ----------------------- upload 上传 ------------------------
+    // ------------------------------------------------------------
 
     @Test
     void testUpload() {
@@ -48,7 +53,7 @@ public class LocalOssTemplateTest {
     @Test
     void testUpload1() {
         // 上传
-        String key = localOssTemplate.upload(testFile, testPathName);
+        String key = localOssTemplate.upload(testFile, testObjectKey);
         // 验证
         assertFileAndClean(key);
     }
@@ -56,7 +61,7 @@ public class LocalOssTemplateTest {
     @Test
     void testUpload2() throws FileNotFoundException {
         // 上传
-        String key = localOssTemplate.upload(new FileInputStream(testFile), testPathName);
+        String key = localOssTemplate.upload(new FileInputStream(testFile), testObjectKey);
         // 验证
         assertFileAndClean(key);
     }
@@ -72,9 +77,71 @@ public class LocalOssTemplateTest {
     @Test
     void testReplaceUpload1() {
         // 上传
-        String key = localOssTemplate.replaceUpload(testFile, testPathName);
+        String key = localOssTemplate.replaceUpload(testFile, testObjectKey);
         // 验证
         assertFileAndClean(key);
+    }
+
+
+    // ------------------------------------------------------------
+    // ---------------------- download 下载 -----------------------
+    // ------------------------------------------------------------
+
+    @Test
+    void testDownload() {
+        // 上传
+        String key = localOssTemplate.upload(testFile);
+
+        // 下载
+        boolean download = localOssTemplate.download(key, testDownLoadFile.getAbsolutePath());
+        assertTrue(download);
+
+        // 验证 + 清理
+        assertFileAndClean(key);
+        assertTrue(testDownLoadFile.delete());
+    }
+
+    @Test
+    void testDownload1() {
+        // 上传
+        String key = localOssTemplate.upload(testFile);
+
+        // 下载
+        boolean download = localOssTemplate.download(key, testDownLoadFile);
+        assertTrue(download);
+
+        // 验证 + 清理
+        assertFileAndClean(key);
+        assertTrue(testDownLoadFile.delete());
+    }
+
+    @Test
+    void testDownload2() {
+        // 上传
+        String key = localOssTemplate.upload(testFile);
+
+        // 下载
+        byte[] download = localOssTemplate.download(key);
+        System.out.println(new String(download));
+
+        // 验证 + 清理
+        assertTrue(download.length > 0);
+        assertFileAndClean(key);
+    }
+
+    @Test
+    void testDownload3() throws IOException {
+        // 上传
+        String key = localOssTemplate.upload(testFile);
+
+        // 下载
+        FileOutputStream outputStream = new FileOutputStream(testDownLoadFile);
+        localOssTemplate.download(key, outputStream);
+        outputStream.close();
+
+        // 验证 + 清理
+        assertFileAndClean(key);
+        assertTrue(testDownLoadFile.delete());
     }
 
     @Test
