@@ -8,6 +8,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.io.*;
+import java.util.Arrays;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -144,14 +146,62 @@ public class LocalOssTemplateTest {
         assertTrue(testDownLoadFile.delete());
     }
 
+
+    // ------------------------------------------------------------
+    // ------------------ object manage 文件管理 -------------------
+    // ------------------------------------------------------------
+
+
+    @Test
+    void testObjectExist() {
+        // 上传
+        String key = localOssTemplate.upload(testFile);
+
+        // 判断是否存在
+        boolean exist = localOssTemplate.objectExist(key);
+        assertTrue(exist);
+
+        // 验证
+        assertFileAndClean(key);
+    }
+
+    @Test
+    void testGetObject() {
+        // 上传
+        String key = localOssTemplate.upload(testFile);
+
+        // 获取文件
+        assertDoesNotThrow(() -> localOssTemplate.getObject(key));
+
+        // 验证
+        assertFileAndClean(key);
+    }
+
     @Test
     void testDeleteObject() {
         // 上传
         String key = localOssTemplate.upload(testFile);
+
         // 删除
         assertTrue(localOssTemplate.deleteObject(key));
+
         // 验证
         assertFalse(localOssTemplate.objectExist(key));
+    }
+
+    @Test
+    void testDeleteObjects() {
+        // 上传
+        String key1 = localOssTemplate.upload(testFile);
+        String key2 = localOssTemplate.upload(testFile);
+
+        // 删除
+        List<String> deleteFailList = localOssTemplate.deleteObjects(Arrays.asList(key1, key2));
+        assertTrue(deleteFailList.isEmpty());
+
+        // 验证
+        assertFalse(localOssTemplate.objectExist(key1));
+        assertFalse(localOssTemplate.objectExist(key2));
     }
 
     /**
