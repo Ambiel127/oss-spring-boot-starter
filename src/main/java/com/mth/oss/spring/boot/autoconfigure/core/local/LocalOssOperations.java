@@ -152,5 +152,13 @@ public interface LocalOssOperations {
      */
     List<String> deleteObjects(List<String> objectKeys);
 
+    /**
+     * 拷贝文件
+     *
+     * @param sourceKey      源 Object 相对路径，例如 sourceDir/exampleObject.txt
+     * @param destinationKey 目标 Object 相对路径，例如 destinationDir/exampleObject.txt
+     * @return 是否拷贝成功，拷贝成功true；拷贝失败false
+     */
+    boolean copyObject(String sourceKey, String destinationKey);
 
 }

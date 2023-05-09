@@ -127,6 +127,16 @@ public class LocalOssTemplate implements LocalOssOperations, DefaultObjectKeyHan
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public boolean copyObject(String sourceKey, String destinationKey) {
+        try {
+            FileUtils.copyFile(getObject(sourceKey), getObject(destinationKey));
+        } catch (IOException e) {
+            throw new IORuntimeException(e);
+        }
+        return objectExist(destinationKey);
+    }
+
 
     /**
      * 获取完整路径
