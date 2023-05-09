@@ -204,6 +204,21 @@ public class LocalOssTemplateTest {
         assertFalse(localOssTemplate.objectExist(key2));
     }
 
+    @Test
+    void testCopyObject() {
+        // 上传
+        String key = localOssTemplate.upload(testFile);
+
+        // 拷贝
+        String destinationKey = "destinationDir/test.txt";
+        assertTrue(localOssTemplate.copyObject(key, destinationKey));
+
+        // 验证
+        assertFileAndClean(key);
+        assertFileAndClean(destinationKey);
+    }
+
+
     /**
      * 验证文件并清理文件
      *
